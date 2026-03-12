@@ -1,0 +1,251 @@
+import React, { useState } from "react";
+
+const RegisterPage = () => {
+    const [data, setData] = useState({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+    };
+
+    const getPasswordStrength = () => {
+        const len = data.password.length;
+        if (len === 0) return { score: 0, label: "" };
+        if (len < 5) return { score: 1, label: "Weak" };
+        if (len < 8) return { score: 2, label: "Medium" };
+        return { score: 3, label: "Strong" };
+    };
+
+    const strength = getPasswordStrength();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!data.fullName.trim() || !data.email.trim() || !data.password || !data.confirmPassword) {
+            alert("Please fill out all fields.");
+            return;
+        }
+        if (data.password !== data.confirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+
+        localStorage.setItem("registerData", JSON.stringify(data));
+        alert("Sign up successful!");
+        console.log("Registered data:", data);
+    };
+
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#f8f9fc] font-sans antialiased">
+            {/* Top Logo Area */}
+            <div className="flex items-center gap-2.5 mb-8">
+                <div className="w-10 h-10 flex items-center justify-center bg-indigo-50 text-indigo-500 rounded-full">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                    </svg>
+                </div>
+                <span className="text-2xl font-bold text-indigo-600 tracking-tight">SmartHelp AI</span>
+            </div>
+
+            {/* Main Card */}
+            <div className="bg-white rounded-[24px] p-8 sm:p-10 w-full max-w-[480px] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">Create Account</h1>
+                    <p className="text-[15px] text-slate-500">Join thousands of users leveraging AI assistance.</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    {/* Full Name */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                        <div className="relative flex items-center">
+                            <span className="absolute left-4 text-slate-400 pointer-events-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                name="fullName"
+                                placeholder="John Doe"
+                                value={data.fullName}
+                                onChange={handleChange}
+                                className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Email Address */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                        <div className="relative flex items-center">
+                            <span className="absolute left-4 text-slate-400 pointer-events-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                                </svg>
+                            </span>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="name@example.com"
+                                value={data.email}
+                                onChange={handleChange}
+                                className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Password */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-slate-700">Password</label>
+                        <div className="relative flex items-center">
+                            <span className="absolute left-4 text-slate-400 pointer-events-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </span>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                placeholder="••••••••"
+                                value={data.password}
+                                onChange={handleChange}
+                                className="w-full py-3 pl-11 pr-12 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute right-4 text-slate-400 hover:text-slate-500 transition-colors bg-transparent border-none p-1 flex outline-none"
+                            >
+                                {showPassword ? (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                ) : (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Password Strength Indicator */}
+                        <div className="mt-1">
+                            <div className="flex gap-1.5">
+                                {[1, 2, 3, 4].map((index) => {
+                                    let bgColor = "bg-slate-200";
+                                    if (strength.score >= index) {
+                                        if (strength.score === 1) bgColor = "bg-red-400";
+                                        else if (strength.score === 2) bgColor = "bg-amber-400";
+                                        else bgColor = "bg-indigo-500";
+                                    }
+                                    return (
+                                        <div key={index} className={`h-1 w-full rounded-full transition-colors duration-300 ${bgColor}`}></div>
+                                    );
+                                })}
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-2 text-[13px] text-slate-500 tracking-tight">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-indigo-500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <span>
+                                    Strength: <span className="font-semibold text-indigo-500">{strength.label || "None"}</span> . Use 8+ characters.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div className="flex flex-col gap-1.5 mt-1">
+                        <label className="text-sm font-semibold text-slate-700">Confirm Password</label>
+                        <div className="relative flex items-center">
+                            <span className="absolute left-4 text-slate-400 pointer-events-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    <path d="m9 12 2 2 4-4" />
+                                </svg>
+                            </span>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="••••••••"
+                                value={data.confirmPassword}
+                                onChange={handleChange}
+                                className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full mt-4 py-3.5 bg-indigo-500 text-white rounded-xl text-[15px] font-semibold flex justify-center items-center gap-2 transition-all hover:bg-indigo-600 active:scale-[0.98] shadow-sm shadow-indigo-500/20"
+                    >
+                        Sign Up
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </button>
+                </form>
+
+                <div className="text-center mt-8 pt-1">
+                    <p className="text-[14px] text-slate-500 m-0">
+                        Already have an account?{" "}
+                        <a href="#login" className="text-indigo-500 font-semibold no-underline hover:underline">
+                            Log in
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            {/* Footer Trusted Layout */}
+            <div className="mt-10 text-center">
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-5">
+                    Trusted by teams at
+                </p>
+                <div className="flex gap-8 items-center justify-center text-slate-400">
+                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                        TECHFLOW
+                    </div>
+                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83" />
+                        </svg>
+                        LUMINA
+                    </div>
+                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                        </svg>
+                        NEBULA
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RegisterPage;
