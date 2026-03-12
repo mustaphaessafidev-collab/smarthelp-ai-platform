@@ -1,11 +1,16 @@
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./components/auth/LoginPage";
+import RegisterPage from "./components/auth/RegisterPage";
+import HomePage from "./components/home/HomePage";
+
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600">
-        SmartHelp AI
-      </h1>
-    </div>
-  )
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/" element={<HomePage />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
