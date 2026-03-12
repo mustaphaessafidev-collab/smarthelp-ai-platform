@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 const LoginPage = () => {
     const [data, setData] = useState({
         email: "",
@@ -161,13 +161,8 @@ const LoginPage = () => {
 
             <div className="text-center flex flex-col gap-6">
                 <p className="text-sm text-slate-500 m-0">
-                    Don't have an account? <a href="#create" className="text-indigo-500 font-semibold no-underline hover:underline">Create an account</a>
+                    Don't have an account? <Link to="/register" href="#create" className="text-indigo-500 font-semibold no-underline hover:underline">Create an account</Link>
                 </p>
-                <div className="flex justify-center gap-6 flex-wrap">
-                    <a href="#terms" className="text-[13px] text-slate-400 no-underline transition-colors hover:text-slate-500">Terms of Service</a>
-                    <a href="#privacy" className="text-[13px] text-slate-400 no-underline transition-colors hover:text-slate-500">Privacy Policy</a>
-                    <a href="#support" className="text-[13px] text-slate-400 no-underline transition-colors hover:text-slate-500">Contact Support</a>
-                </div>
             </div>
         </div>
     );

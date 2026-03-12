@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const RegisterPage = () => {
     const [data, setData] = useState({
@@ -208,42 +209,14 @@ const RegisterPage = () => {
                     </button>
                 </form>
 
-                <div className="text-center mt-8 pt-1">
-                    <p className="text-[14px] text-slate-500 m-0">
-                        Already have an account?{" "}
-                        <a href="#login" className="text-indigo-500 font-semibold no-underline hover:underline">
-                            Log in
-                        </a>
-                    </p>
-                </div>
             </div>
 
-            {/* Footer Trusted Layout */}
-            <div className="mt-10 text-center">
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-5">
-                    Trusted by teams at
-                </p>
-                <div className="flex gap-8 items-center justify-center text-slate-400">
-                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                        </svg>
-                        TECHFLOW
-                    </div>
-                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83" />
-                        </svg>
-                        LUMINA
-                    </div>
-                    <div className="flex items-center gap-1.5 font-bold text-[13px] tracking-wide">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-                        </svg>
-                        NEBULA
-                    </div>
-                </div>
-            </div>
+            
+            <div className="text-center mt-5 flex flex-col gap-6">
+                    <p className="text-sm text-slate-500 m-0">
+                                 Already have an account? <Link to="/login" href="#create" className="text-indigo-500 font-semibold no-underline hover:underline">Log in</Link>
+                    </p>
+             </div>
         </div>
     );
 };
