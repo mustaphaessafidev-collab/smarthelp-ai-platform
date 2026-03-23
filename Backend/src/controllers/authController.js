@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma.js";
-
+import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -86,3 +86,46 @@ export const verifyCode = async (req, res) => {
     res.status(500).json({ message: "Server erreur" });
   }
 };
+
+export const login =async (req,res)=>{
+  try{
+    const {email,password}=req.body;
+    const user = await prisma.user.findUnique({
+      where :{email},
+    });
+    if(!user){
+      return res.status(404).json({
+        message:"utilisateur non trouve"
+      });
+    }
+
+    if(!user.isVerified){
+      return res.status(400).json({message:"verifie votre email "});
+    }
+    const isPasswordValid = await bcrypt.compare(password,user.password);
+
+    if(!isPasswordValid){
+      return res.status(401).json({
+        message : "mot de passe non valid"
+      });
+    }
+    const token = jwt.sign(
+      {
+        userId:user.id,
+        role:user.role,
+      },
+      process.env.JWT_SECRET,{expiresIn:"1d"}
+    );
+
+    return res.json({
+      message: "Login avec succes",
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server erreur" });
+  }
+
+  }
+
+
