@@ -9,11 +9,13 @@ import Settings from "../page/pageAdmin/Settings";
 import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import HomePage from "../components/home/HomePage";
+import VerifyCodePage from "../components/auth/verify-code";
 function AppRoutes() {
   return (
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-code" element={<VerifyCodePage />} />
         <Route path="/" element={<HomePage />} />
 
 

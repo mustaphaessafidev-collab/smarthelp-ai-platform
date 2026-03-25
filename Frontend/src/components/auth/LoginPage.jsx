@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 const LoginPage = () => {
     const [data, setData] = useState({
         email: "",
         password: "",
         remember: false,
     });
+    let navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
@@ -20,22 +22,30 @@ const LoginPage = () => {
         setShowPassword((prev) => !prev);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit =async (e) => {
         e.preventDefault();
         // Validate inputs
-        if (!data.email.trim() || !data.password) {
+        try{
+            if (!data.email.trim() || !data.password) {
             alert("Please enter both email and password.");
             return;
+            }
+            // send data to backend
+            const {remember,...usedate}=data
+            const res= await api.post("/auth/login",usedate)
+        // Save data to localStorage
+            localStorage.setItem("token", res.data.token);;
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+        // Show alert on success
+            alert("Sign in successful!");
+            navigate("/Admin");
+        // Console log the data
+            console.log("Logged in data:", data);
+        }catch(e){
+            console.error(e);
+            alert(e.response?.data?.message || "Login failed");
         }
 
-        // Save data to localStorage
-        localStorage.setItem("loginData", JSON.stringify(data));
-
-        // Show alert on success
-        alert("Sign in successful!");
-
-        // Console log the data
-        console.log("Logged in data:", data);
     };
 
     return (

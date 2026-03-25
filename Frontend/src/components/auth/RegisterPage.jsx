@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import api from "../../services/api";
+import { useNavigate } from "react-router";
 const RegisterPage = () => {
     const [data, setData] = useState({
-        fullName: "",
+        firstName: "",
+        lastName:"",
         email: "",
         password: "",
         confirmPassword: ""
     });
-
+    let navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
@@ -33,21 +35,33 @@ const RegisterPage = () => {
 
     const strength = getPasswordStrength();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!data.fullName.trim() || !data.email.trim() || !data.password || !data.confirmPassword) {
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+        if (!data.firstName.trim() || !data.lastName.trim() || !data.email.trim() || !data.password || !data.confirmPassword) {
             alert("Please fill out all fields.");
             return;
         }
+
         if (data.password !== data.confirmPassword) {
             alert("Passwords do not match.");
             return;
         }
 
-        localStorage.setItem("registerData", JSON.stringify(data));
-        alert("Sign up successful!");
-        console.log("Registered data:", data);
-    };
+        const { confirmPassword, ...userData } = data;
+
+        const res = await api.post("/auth/register", userData);
+
+        
+        localStorage.setItem("verifyEmail", data.email.trim().toLowerCase());
+        console.log(res.data);
+        navigate("/verify-code");
+    } catch (e) {
+        console.error(e);
+        alert(e.response?.data?.message || "Registration failed");
+    }
+};
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#f8f9fc] font-sans antialiased">
@@ -71,7 +85,7 @@ const RegisterPage = () => {
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     {/* Full Name */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                        <label className="text-sm font-semibold text-slate-700">firstName</label>
                         <div className="relative flex items-center">
                             <span className="absolute left-4 text-slate-400 pointer-events-none">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,9 +95,30 @@ const RegisterPage = () => {
                             </span>
                             <input
                                 type="text"
-                                name="fullName"
+                                name="firstName"
                                 placeholder="John Doe"
-                                value={data.fullName}
+                                value={data.firstName}
+                                onChange={handleChange}
+                                className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                        </div>
+                    </div>
+
+                    {/*lastName */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-slate-700">lastName</label>
+                        <div className="relative flex items-center">
+                            <span className="absolute left-4 text-slate-400 pointer-events-none">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                name="lastName"
+                                placeholder="John Doe"
+                                value={data.lastName}
                                 onChange={handleChange}
                                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                             />
