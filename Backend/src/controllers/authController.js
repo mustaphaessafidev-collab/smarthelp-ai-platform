@@ -18,12 +18,9 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ message: "Email deja exists" });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const verificationCode = Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString();
+      100000 + Math.random() * 900000,).toString();
 
     const codeExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -138,7 +135,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
-        message: "email et mot de pass spnt requis",
+        message: "email et mot de pass sont requis",
       });
     }
     const user = await prisma.user.findUnique({
@@ -171,6 +168,7 @@ export const login = async (req, res) => {
 
     return res.json({
       message: "Login avec succes",     
+      token
     });
   } catch (error) {
     console.error(error);
