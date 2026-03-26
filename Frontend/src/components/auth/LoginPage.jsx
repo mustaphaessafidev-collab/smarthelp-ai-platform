@@ -36,9 +36,19 @@ const LoginPage = () => {
         // Save data to localStorage
             localStorage.setItem("token", res.data.token);;
             localStorage.setItem("user", JSON.stringify(res.data.user));
+            const role =res.data.user.role
         // Show alert on success
+            if(role==="ADMIN"){
+                navigate("/Admin");
+            }else if(role==="AGENT"){
+                navigate("/Agent");
+            }else if(role==="USER"){
+                navigate("/User");
+            }else{
+                navigate("/page404")
+            }
             alert("Sign in successful!");
-            navigate("/Admin");
+            
         // Console log the data
             console.log("Logged in data:", data);
         }catch(e){

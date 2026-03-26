@@ -4,6 +4,7 @@ function Sidebar() {
   const menu = [
     { name: "Dashboard", path: "/admin" },
     { name: "User Management", path: "/admin/users" },
+    { name: "Agent Management", path: "/admin/agent" },
     { name: "Knowledge Base", path: "/admin/knowledge-base" },
     { name: "Analytics", path: "/admin/analytics" },
     { name: "Settings", path: "/admin/settings" },

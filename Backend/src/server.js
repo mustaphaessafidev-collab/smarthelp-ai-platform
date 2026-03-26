@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import authRoutes from './routes/authRoutes.js'
-
+import adminRouter from './routes/adminRouter.js'
 dotenv.config()
 
 const app = express()
@@ -16,6 +16,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 app.use('/api/auth', authRoutes)
+app.use('/api/admin',adminRouter )
 app.get('/', (req, res) => {
   res.json({ message: 'SmartHelp AI Backend is running' })
 })

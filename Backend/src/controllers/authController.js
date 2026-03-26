@@ -168,7 +168,9 @@ export const login = async (req, res) => {
 
     return res.json({
       message: "Login avec succes",     
-      token
+      token,
+      user
+
     });
   } catch (error) {
     console.error(error);
