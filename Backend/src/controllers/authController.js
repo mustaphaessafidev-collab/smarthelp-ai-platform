@@ -117,7 +117,6 @@ export const resendCode = async (req, res) => {
         codeExpiresAt,
       },
     });
-
     await sendVerificationCode(email, verificationCode);
     return res.json({
       message: "vouveau code eonvoye avec succes",
@@ -129,7 +128,6 @@ export const resendCode = async (req, res) => {
     });
   }
 };
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -146,7 +144,6 @@ export const login = async (req, res) => {
         message: "utilisateur non trouve",
       });
     }
-
     if (!user.isVerified) {
       return res.status(400).json({ message: "verifie votre email " });
     }
@@ -165,7 +162,6 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-
     return res.json({
       message: "Login avec succes",     
       token
@@ -175,3 +171,6 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server erreur" });
   }
 };
+
+
+
