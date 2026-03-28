@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import { sendVerificationCode } from "../services/emailService.js";
+import { verifyGoogleToken } from "../services/googleService.js";
 
 export const register = async (req, res) => {
   try {
@@ -117,7 +118,6 @@ export const resendCode = async (req, res) => {
         codeExpiresAt,
       },
     });
-
     await sendVerificationCode(email, verificationCode);
     return res.json({
       message: "vouveau code eonvoye avec succes",
@@ -129,7 +129,6 @@ export const resendCode = async (req, res) => {
     });
   }
 };
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -145,6 +144,12 @@ export const login = async (req, res) => {
       return res.status(404).json({
         message: "utilisateur non trouve",
       });
+    }
+    
+    if(user.authProvider === "GOOGLE"){
+      return res.status(400).json({
+        message : "utilisez Google pour se connecter",
+      })
     }
 
     if (!user.isVerified) {
@@ -165,7 +170,6 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-
     return res.json({
       message: "Login avec succes",     
       token,
@@ -177,3 +181,86 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server erreur" });
   }
 };
+
+export const googleLogin = async(req,res)=>{
+  try{
+    const { idToken} = req.body;
+
+    if(!idToken){
+      return res.status(400).json({
+        message:"Google token requis",
+      });
+    }
+  const payload = await verifyGoogleToken(idToken);
+
+  const email = payload.email;
+  const googleId = payload.sub;
+  const firstName = payload.given_name || "Google";
+  const lastName = payload.family_name || "User";
+  const profileImage = payload.picture || null ;
+  const emailVerified = payload.email_verified;
+
+  if(!email){
+    return res.status(400).json({
+      message : "Email Google introuvable",
+    });
+  }
+  
+  let user = await prisma.user.findUnique({
+    where : {email},
+  })
+
+  if(!user){
+    user = await prisma.user.create({
+      data:{
+        firstName,
+        lastName,
+        email,
+        googleId,
+        profileImage,
+        authProvider:"GOOGLE",
+        isVerified: !!emailVerified,
+      },
+    });
+  }else if (user.authProvider === "LOCAL") {
+  return res.status(400).json({
+    message: "ce compte existe deja avec email et mot de passe",
+  });
+}
+
+  const token =jwt.sign(
+    {
+      userId:user.id,
+      role:user.role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn:"1d"
+    }
+  );
+  return res.status(200).json({
+      message: "Google login avec succes",
+      token,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server erreur Google login",
+    });
+  }
+
+
+
+  }
+
+
+
+
