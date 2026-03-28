@@ -38,6 +38,8 @@ model User {
   googleId          String?      @unique
   verificationCode  String?      
   codeExpiresAt     DateTime?    
+  resetPasswordCode      String?
+resetPasswordExpiresAt DateTime?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 }
