@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
 import helmet from 'helmet'
+import ticketRoutes from './routes/ticketRoutes.js'
 
 dotenv.config()
 
@@ -13,4 +14,10 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.use('/api/ticket',)
+app.use('/api/ticket', ticketRoutes)
+
+const PORT = process.env.PORT || 5001
+
+app.listen(PORT, () => {
+  console.log(`Ticket service running on port ${PORT}`)
+})

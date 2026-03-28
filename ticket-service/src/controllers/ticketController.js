@@ -1,12 +1,12 @@
-import prisma from "../../lib/prisma";
+import prisma from "../../lib/prisma.js";
 
 export const createTicket = async (req, res) => {
   try {
-    const { title, description, priority, message } = req.body;
+    const { title, description, priority, categoryId, message } = req.body;
 
-    if (!title || !description || !message) {
+    if (!title || !description) {
       return res.status(400).json({
-        message: "tous les champs sont requis",
+        message: "title et description sont requis",
       });
     }
 
@@ -14,9 +14,22 @@ export const createTicket = async (req, res) => {
       data: {
         title,
         description,
-        priority,
-        message,
+        priority: priority || "MEDIUM",
         createdBy: req.user.userId,
+        categoryId: categoryId || null,
+
+        ...(message && {
+          messages: {
+            create: {
+              content: message,
+              authorId: req.user.userId,
+            },
+          },
+        }),
+      },
+      include: {
+        category: true,
+        messages: true,
       },
     });
 
@@ -26,6 +39,7 @@ export const createTicket = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+
     return res.status(500).json({
       message: "Server error",
     });
