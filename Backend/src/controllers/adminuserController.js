@@ -118,3 +118,116 @@ export const AddAgent =async (req,res)=>{
     }
 
 }
+// delete Agent by id 
+export const deleteAgent = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const agent = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!agent) {
+      return res.status(404).json({
+        success: false,
+        message: "Agent not found",
+      });
+    }
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Agent deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+// updtae Agent 
+export const UpdateAgent =async (req,res)=>{
+    try{
+        const id = parseInt(req.params.id)
+        const { firstName, lastName, email, password } = req.body;
+
+
+        const agent = await prisma.user.findUnique({
+        where: { id },
+        });
+
+        if (!agent) {
+            return res.status(404).json({
+            success: false,
+            message: "Agent not found",
+        });
+        }
+
+
+        if (!firstName || !lastName || !email) {
+            return res.status(400).json({
+            success: false,
+            message: "First name, last name and email are required",
+         });
+        }
+
+        const existingEmail = await prisma.user.findFirst({
+            where: {
+                email,
+                NOT: {
+                id,
+                },
+            },
+        });
+
+        if (existingEmail) {
+        return res.status(409).json({
+            success: false,
+            message: "Email already used by another user",
+        });
+        }
+
+        let updateData = {
+            firstName,
+            lastName,
+            email,
+        };
+
+        if (password && password.trim() !== "") {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updateData.password = hashedPassword;
+        }
+
+        const updatedAgent = await prisma.user.update({
+        where: { id },
+        data: updateData,
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
+            isVerified: true,
+            createdAt: true,
+         },
+        });
+
+        return res.status(200).json({
+        success: true,
+        message: "Agent updated successfully",
+        agent: updatedAgent,
+        });
+        
+        
+    }catch (error) {
+        console.error(error);
+        return res.status(500).json({
+        success: false,
+        message: "Server error",
+    });
+    }
+}
