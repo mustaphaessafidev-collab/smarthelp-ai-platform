@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Plus, Pencil, UserX, ChevronLeft, ChevronRight } from "lucide-react";
-import { AddAgent, deleteAgent, getAgentOnly } from "../../services/adminService";
+import { AddAgent, deleteAgent, getAgentOnly, updateAgent } from "../../services/adminService";
 
 
 function AgentManagement() {
@@ -11,6 +11,8 @@ function AgentManagement() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedAgentId, setSelectedAgentId] = useState(null);
   const itemsPerPage = 4;
     const [data, setData] = useState({
            firstName: "",
@@ -18,7 +20,20 @@ function AgentManagement() {
            email: "",
            password: "",
            
-    }); 
+    });
+    
+    const closeModal = () => {
+      setShowModal(false);
+      setIsEditMode(false);
+      setSelectedAgentId(null);
+      setData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+      });
+    };
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -79,6 +94,51 @@ const handleSubmit = async (e) => {
   useEffect(() => {
     fetchAgents();
   }, []);
+
+  const handleEditClick = (agent) => {
+  setIsEditMode(true);
+  setSelectedAgentId(agent.id);
+  setShowModal(true);
+
+    setData({
+      firstName: agent.firstName || "",
+      lastName: agent.lastName || "",
+      email: agent.email || "",
+      password: "",
+    });
+  };
+
+  const handleUpdateSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    if (
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
+      !data.email.trim()
+    ) {
+      alert("Please fill out first name, last name, and email.");
+      return;
+    }
+
+    await updateAgent(selectedAgentId, data);
+
+    setData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+
+    setSelectedAgentId(null);
+    setIsEditMode(false);
+    setShowModal(false);
+    fetchAgents();
+  } catch (e) {
+    console.error(e);
+    alert(e.response?.data?.message || "Update agent failed");
+  }
+};
 
   const filteredAgents = useMemo(() => {
     let result = [...agents];
@@ -184,16 +244,18 @@ const handleSubmit = async (e) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900">Add Agent</h3>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {isEditMode ? "Update Agent" : "Add Agent"}
+                </h3>
                 <button
-                onClick={() => setShowModal(false)}
+                onClick={closeModal}
                 className="rounded-lg px-3 py-1 text-slate-500 hover:bg-slate-100"
                 >
                 X
                 </button>
             </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit} >
+      <form className="space-y-4"onSubmit={isEditMode ? handleUpdateSubmit : handleSubmit}>
         <input
           type="text"
           placeholder="First name"
@@ -220,7 +282,7 @@ const handleSubmit = async (e) => {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={isEditMode ? "New password (optional)" : "Password"}
           className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
             onChange={handleChange}
             name="password"
@@ -239,7 +301,7 @@ const handleSubmit = async (e) => {
             type="submit"
             className="rounded-xl bg-violet-600 px-4 py-2 font-medium text-white hover:bg-violet-700"
           >
-            Save Agent
+            {isEditMode ? "Update Agent" : "Save Agent"}
           </button>
         </div>
       </form>
@@ -310,7 +372,7 @@ const handleSubmit = async (e) => {
 
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-3">
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-violet-600">
+                          <button onClick={() => handleEditClick(agent)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-violet-600">
                             <Pencil size={16} />
                           </button>
                           <button onClick={() =>handleDelete(agent.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-red-500">

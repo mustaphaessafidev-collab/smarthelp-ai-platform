@@ -16,3 +16,7 @@ export const deleteAgent = async (id) => {
   const res = await api.delete(`/admin/agent/${id}`);
   return res.data;
 };
+export const updateAgent = async (id, data) => {
+  const res = await api.put(`/admin/agents/${id}`, data);
+  return res.data;
+};
