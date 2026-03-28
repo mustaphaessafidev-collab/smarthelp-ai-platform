@@ -118,3 +118,34 @@ export const AddAgent =async (req,res)=>{
     }
 
 }
+// delete Agent by id 
+export const deleteAgent = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const agent = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!agent) {
+      return res.status(404).json({
+        success: false,
+        message: "Agent not found",
+      });
+    }
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Agent deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

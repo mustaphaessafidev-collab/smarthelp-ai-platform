@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Plus, Pencil, UserX, ChevronLeft, ChevronRight } from "lucide-react";
-import { AddAgent, getAgentOnly } from "../../services/adminService";
+import { AddAgent, deleteAgent, getAgentOnly } from "../../services/adminService";
 
 
 function AgentManagement() {
@@ -139,8 +139,17 @@ const handleSubmit = async (e) => {
   }
 
 
-
-
+// delete Agent
+  const handleDelete = async (id) => {
+  try {
+    if (!confirm("Delete this worker?")) return;
+    await deleteAgent(id);
+    fetchAgents(); 
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete agent");
+  }
+};
 
 
 
@@ -304,7 +313,7 @@ const handleSubmit = async (e) => {
                           <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-violet-600">
                             <Pencil size={16} />
                           </button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-red-500">
+                          <button onClick={() =>handleDelete(agent.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-red-500">
                             <UserX size={16} />
                           </button>
                         </div>

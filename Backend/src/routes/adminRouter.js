@@ -1,5 +1,5 @@
 import express from "express";
-import { AddAgent, getAgentOnly, getUsersOnly } from "../controllers/adminuserController.js";
+import { AddAgent, deleteAgent, getAgentOnly, getUsersOnly } from "../controllers/adminuserController.js";
 
 
 const router = express.Router();
@@ -9,4 +9,5 @@ router.get("/users",getUsersOnly)
 //Agent Ruter
 router.get("/agent",getAgentOnly)
 router.post("/agent",AddAgent)
+router.delete("/agent/:id",deleteAgent)
 export default router;
