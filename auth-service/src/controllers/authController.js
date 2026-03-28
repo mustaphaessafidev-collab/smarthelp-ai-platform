@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
-import { sendVerificationCode } from "../services/emailService.js";
+import { sendVerificationCode,sendResetPassword } from "../services/emailService.js";
 import { verifyGoogleToken } from "../services/googleService.js";
 
 export const register = async (req, res) => {
@@ -261,6 +261,133 @@ export const googleLogin = async(req,res)=>{
 
   }
 
+  export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "email est requis",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "utilisateur non trouve",
+      });
+    }
+
+    if (user.authProvider === "GOOGLE") {
+      return res.status(400).json({
+        message: "ce compte utilise Google Sign-In",
+      });
+    }
+
+    const resetPasswordCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    const resetPasswordExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        resetPasswordCode,
+        resetPasswordExpiresAt,
+      },
+    });
+
+    await sendResetPassword(email, resetPasswordCode);
+
+    return res.status(200).json({
+      message: "code de reinitialisation envoye par email",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server erreur",
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({
+        message: "email, code et nouveau mot de passe sont requis",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "utilisateur non trouve",
+      });
+    }
+
+    if (user.authProvider === "GOOGLE") {
+      return res.status(400).json({
+        message: "ce compte utilise Google Sign-In",
+      });
+    }
+
+    if (!user.resetPasswordCode || !user.resetPasswordExpiresAt) {
+      return res.status(400).json({
+        message: "aucun code de reinitialisation trouve",
+      });
+    }
+
+    if (user.resetPasswordCode !== code) {
+      return res.status(400).json({
+        message: "code non valide",
+      });
+    }
+
+    if (new Date() > new Date(user.resetPasswordExpiresAt)) {
+      return res.status(400).json({
+        message: "code expire",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        password: hashedPassword,
+        resetPasswordCode: null,
+        resetPasswordExpiresAt: null,
+      },
+    });
+
+    return res.status(200).json({
+      message: "mot de passe reinitialise avec succes",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server erreur",
+    });
+  }
+};
+
+
+
+  
+
+
+
+
+   
 
 
 
