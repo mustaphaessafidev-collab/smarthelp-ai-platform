@@ -39,6 +39,7 @@ const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+        console.log("test")
         if (!data.firstName.trim() || !data.lastName.trim() || !data.email.trim() || !data.password || !data.confirmPassword) {
             alert("Please fill out all fields.");
             return;
