@@ -1,5 +1,29 @@
 import prisma from "../../lib/prisma.js";
 
+
+export const getMyTickets = async (req,res)=>{
+  try{
+    const tickets = await prisma.ticket.findMany({
+      where:{
+          createdBy: req.user.userId,},
+          include:{
+            category: true,
+            messages : true,
+          },
+          orderBy:{
+            createdAt: "desc",
+          }
+    });
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({
+      message:"Server error",
+    });
+  }
+}
+
+
+
 export const createTicket = async (req, res) => {
   try {
     const { title, description, priority, categoryId, message } = req.body;
@@ -23,6 +47,7 @@ export const createTicket = async (req, res) => {
             create: {
               content: message,
               authorId: req.user.userId,
+              type: "USER",
             },
           },
         }),
@@ -45,3 +70,4 @@ export const createTicket = async (req, res) => {
     });
   }
 };
+

@@ -15,8 +15,10 @@ datasource db {
 }
 
 enum TicketStatus {
+  NEW
   OPEN
   IN_PROGRESS
+  PENDING
   RESOLVED
   CLOSED
 }
@@ -28,11 +30,17 @@ enum TicketPriority {
   URGENT
 }
 
+enum MessageType{
+  USER
+  AGENT
+  AI
+}
+
 model Ticket {
   id          Int            @id @default(autoincrement())
   title       String
   description String
-  status      TicketStatus   @default(OPEN)
+  status      TicketStatus   @default(New)
   priority    TicketPriority @default(MEDIUM)
 
   categoryId  Int?
@@ -42,6 +50,8 @@ model Ticket {
   assignedTo  Int?
 
   messages    Message[]
+  attachments Attachment[]
+  aiResult AIResult?
 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -66,3 +76,29 @@ model Message {
   createdAt DateTime @default(now())
 }
 
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  fileName  String
+  fileUrl   String
+  fileType  String?
+  fileSize  Int?
+  ticketId  Int
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model AIResult {
+  id                Int      @id @default(autoincrement())
+  summary           String?
+  predictedCategory String?
+  suggestedPriority String?
+  suggestedReply    String?
+  model             String?
+  ticketId          Int      @unique
+
+  ticket            Ticket   @relation(fields: [ticketId], references: [id])
+
+  createdAt         DateTime @default(now())
+}
