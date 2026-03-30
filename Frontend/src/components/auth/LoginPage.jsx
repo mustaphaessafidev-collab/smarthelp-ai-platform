@@ -30,6 +30,7 @@ const LoginPage = () => {
             alert("Please enter both email and password.");
             return;
             }
+            console.log("test")
             // send data to backend
             const {remember,...usedate}=data
             const res= await api.post("/auth/login",usedate)
