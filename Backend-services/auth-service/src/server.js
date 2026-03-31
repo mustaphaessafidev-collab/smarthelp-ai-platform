@@ -16,7 +16,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 app.use('/', authRoutes)
-
+app.use('/', adminRouter)
 app.get('/', (req, res) => {
   res.json({ message: 'SmartHelp AI Backend is running' })
 })
