@@ -14,6 +14,11 @@ import Agent from "../page/agent";
 import Page404 from "../page/page404";
 import User from "../page/User";
 import AgentManagement from "../page/pageAdmin/AgentManagement";
+import UserDashboard from "../page/pageClient/Dashboard";
+import MyTickets from "../page/pageClient/MyTickets";
+import CreateTicket from "../page/pageClient/CreateTicket";
+import Profile from "../page/pageClient/Profile";
+import UserLayout from "../components/layout/layoutClient/UserLayout";
 function AppRoutes() {
   return (
     <Routes>
@@ -35,6 +40,14 @@ function AppRoutes() {
           <Route path="knowledge-base" element={<KnowledgeBase />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* User Router     */}
+        <Route path="/User" element={<UserLayout />}>
+          <Route index element={<UserDashboard />} />
+          <Route path="MyTickets" element={<MyTickets />} />
+          <Route path="CreateTicket" element={<CreateTicket />} />
+          <Route path="Profile" element={<Profile />} />
         </Route>
     </Routes>
     
