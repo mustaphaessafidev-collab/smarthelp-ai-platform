@@ -54,7 +54,7 @@ const handleSubmit = async (e) => {
       !data.email.trim() ||
       !data.password.trim()
     ) {
-      alert("Please fill out all fields.");
+      alert("Veuillez remplir tous les champs.");
       return;
     }
 
@@ -71,7 +71,7 @@ const handleSubmit = async (e) => {
     fetchAgents();
   } catch (e) {
     console.error(e);
-    alert(e.response?.data?.message || "Add agent failed");
+    alert(e.response?.data?.message || "Échec de l'ajout de l'agent");
   }
 };
 
@@ -85,7 +85,7 @@ const handleSubmit = async (e) => {
       setAgents(data?.users || []);
     } catch (err) {
       console.error(err);
-      setError("Failed to load agents");
+      setError("Échec du chargement des agents");
     } finally {
       setLoading(false);
     }
@@ -117,7 +117,7 @@ const handleSubmit = async (e) => {
       !data.lastName.trim() ||
       !data.email.trim()
     ) {
-      alert("Please fill out first name, last name, and email.");
+      alert("Veuillez remplir le prénom, le nom et l’e-mail.");
       return;
     }
 
@@ -136,7 +136,7 @@ const handleSubmit = async (e) => {
     fetchAgents();
   } catch (e) {
     console.error(e);
-    alert(e.response?.data?.message || "Update agent failed");
+    alert(e.response?.data?.message || "Échec de la mise à jour de l'agent");
   }
 };
 
@@ -182,7 +182,7 @@ const handleSubmit = async (e) => {
     return (
       <div className="p-6">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Loading agents...</p>
+          <p className="text-sm text-slate-500">Chargement des agents...</p>
         </div>
       </div>
     );
@@ -202,12 +202,12 @@ const handleSubmit = async (e) => {
 // delete Agent
   const handleDelete = async (id) => {
   try {
-    if (!confirm("Delete this worker?")) return;
+    if (!confirm("Supprimer cet agent ?")) return;
     await deleteAgent(id);
     fetchAgents(); 
   } catch (error) {
     console.error(error);
-    alert("Failed to delete agent");
+    alert("Échec de la suppression de l'agent");
   }
 };
 
@@ -223,10 +223,10 @@ const handleSubmit = async (e) => {
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                Agent Management
+                Gestion des agents
                 </h1>
                 <p className="mt-1 text-sm text-slate-500">
-                Manage your support agents, access, and permissions.
+                Gérez vos agents de support, leurs accès et leurs autorisations.
                 </p>
             </div>
 
@@ -236,7 +236,7 @@ const handleSubmit = async (e) => {
   onClick={() => setShowModal(true)}
   className="inline-flex items-center justify-center gap-2 rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
 >
-  Add New User
+  Ajouter un agent
 </button>
         </div>
 
@@ -245,7 +245,7 @@ const handleSubmit = async (e) => {
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-slate-900">
-                  {isEditMode ? "Update Agent" : "Add Agent"}
+                  {isEditMode ? "Modifier l’agent" : "Ajouter un agent"}
                 </h3>
                 <button
                 onClick={closeModal}
@@ -258,7 +258,7 @@ const handleSubmit = async (e) => {
       <form className="space-y-4"onSubmit={isEditMode ? handleUpdateSubmit : handleSubmit}>
         <input
           type="text"
-          placeholder="First name"
+          placeholder="Prénom"
           className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
             name="firstName"
             onChange={handleChange}
@@ -266,7 +266,7 @@ const handleSubmit = async (e) => {
         />
         <input
           type="text"
-          placeholder="Last name"
+          placeholder="Nom"
           className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
             onChange={handleChange}
             name="lastName"
@@ -274,7 +274,7 @@ const handleSubmit = async (e) => {
         />
         <input
           type="email"
-          placeholder="Email"
+          placeholder="E-mail"
           className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
             onChange={handleChange}
             name="email"
@@ -282,7 +282,7 @@ const handleSubmit = async (e) => {
         />
         <input
           type="password"
-          placeholder={isEditMode ? "New password (optional)" : "Password"}
+          placeholder={isEditMode ? "Nouveau mot de passe (optionnel)" : "Mot de passe"}
           className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
             onChange={handleChange}
             name="password"
@@ -295,13 +295,13 @@ const handleSubmit = async (e) => {
             onClick={() => setShowModal(false)}
             className="rounded-xl border border-slate-200 px-4 py-2 text-slate-600 hover:bg-slate-50"
           >
-            Cancel
+            Annuler
           </button>
           <button
             type="submit"
             className="rounded-xl bg-violet-600 px-4 py-2 font-medium text-white hover:bg-violet-700"
           >
-            {isEditMode ? "Update Agent" : "Save Agent"}
+            {isEditMode ? "Modifier" : "Enregistrer"}
           </button>
         </div>
       </form>
@@ -316,11 +316,11 @@ const handleSubmit = async (e) => {
             <table className="min-w-full">
               <thead className="bg-slate-50">
                 <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Role</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Joined Date</th>
+                  <th className="px-6 py-4">Nom</th>
+                  <th className="px-6 py-4">E-mail</th>
+                  <th className="px-6 py-4">Rôle</th>
+                  <th className="px-6 py-4">Statut</th>
+                  <th className="px-6 py-4">Date d'inscription</th>
                   <th className="px-6 py-4 text-center">Actions</th>
                 </tr>
               </thead>
@@ -362,7 +362,7 @@ const handleSubmit = async (e) => {
                               agent.isVerified ? "bg-emerald-500" : "bg-slate-300"
                             }`}
                           />
-                          {agent.isVerified ? "Active" : "Inactive"}
+                          {agent.isVerified ? "Actif" : "Inactif"}
                         </span>
                       </td>
 
@@ -385,7 +385,7 @@ const handleSubmit = async (e) => {
                 ) : (
                   <tr>
                     <td colSpan="6" className="px-6 py-10 text-center text-sm text-slate-500">
-                      No agents found.
+                      Aucun agent trouvé.
                     </td>
                   </tr>
                 )}
@@ -395,15 +395,15 @@ const handleSubmit = async (e) => {
 
           <div className="flex flex-col gap-4 border-t border-slate-100 px-6 py-4 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-slate-500">
-              Showing{" "}
+              Affichage de{" "}
               <span className="font-semibold text-slate-700">
                 {filteredAgents.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
               </span>{" "}
-              to{" "}
+              à{" "}
               <span className="font-semibold text-slate-700">
                 {Math.min(currentPage * itemsPerPage, filteredAgents.length)}
               </span>{" "}
-              of <span className="font-semibold text-slate-700">{filteredAgents.length}</span>{" "}
+              sur <span className="font-semibold text-slate-700">{filteredAgents.length}</span>{" "}
               agents
             </p>
 

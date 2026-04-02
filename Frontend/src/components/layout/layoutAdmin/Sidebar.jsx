@@ -2,12 +2,12 @@ import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   const menu = [
-    { name: "Dashboard", path: "/admin" },
-    { name: "User Management", path: "/admin/users" },
-    { name: "Agent Management", path: "/admin/agent" },
-    { name: "Knowledge Base", path: "/admin/knowledge-base" },
-    { name: "Analytics", path: "/admin/analytics" },
-    { name: "Settings", path: "/admin/settings" },
+    { name: "Tableau de bord", path: "/admin" },
+    { name: "Gestion des utilisateurs", path: "/admin/users" },
+    { name: "Gestion des agents", path: "/admin/agent" },
+    { name: "Base de connaissances", path: "/admin/knowledge-base" },
+    { name: "Analytique", path: "/admin/analytics" },
+    { name: "Paramètres", path: "/admin/settings" },
   ];
 
   return (

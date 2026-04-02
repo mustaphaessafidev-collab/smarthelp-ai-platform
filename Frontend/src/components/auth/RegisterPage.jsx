@@ -32,9 +32,9 @@ const RegisterPage = () => {
   const getPasswordStrength = () => {
     const len = data.password.length;
     if (len === 0) return { score: 0, label: "" };
-    if (len < 5) return { score: 1, label: "Weak" };
-    if (len < 8) return { score: 2, label: "Medium" };
-    return { score: 3, label: "Strong" };
+    if (len < 5) return { score: 1, label: "Faible" };
+    if (len < 8) return { score: 2, label: "Moyen" };
+    return { score: 3, label: "Fort" };
   };
 
   const strength = getPasswordStrength();
@@ -50,12 +50,12 @@ const RegisterPage = () => {
         !data.password ||
         !data.confirmPassword
       ) {
-        alert("Please fill out all fields.");
+        alert("Veuillez remplir tous les champs.");
         return;
       }
 
       if (data.password !== data.confirmPassword) {
-        alert("Passwords do not match.");
+        alert("Les mots de passe ne correspondent pas.");
         return;
       }
 
@@ -67,7 +67,7 @@ const RegisterPage = () => {
       navigate("/verify-code");
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || "Registration failed");
+      alert(e.response?.data?.message || "Échec de l'inscription");
     }
   };
 
@@ -78,7 +78,7 @@ const RegisterPage = () => {
       const idToken = credentialResponse.credential;
 
       if (!idToken) {
-        alert("Google token not found");
+        alert("Jeton Google introuvable");
         return;
       }
 
@@ -91,20 +91,20 @@ const RegisterPage = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      alert(message || "Google login successful");
+      alert(message || "Connexion Google réussie");
 
       // بدل هاد التوجيه حسب المشروع ديالك
       navigate("/User");
     } catch (e) {
       console.error("Google login error:", e);
-      alert(e.response?.data?.message || "Google login failed");
+      alert(e.response?.data?.message || "Échec de la connexion avec Google");
     } finally {
       setGoogleLoading(false);
     }
   };
 
   const handleGoogleError = () => {
-    alert("Google Sign-In failed");
+    alert("La connexion Google a échoué");
   };
 
   return (
@@ -132,10 +132,10 @@ const RegisterPage = () => {
       <div className="bg-white rounded-[24px] p-8 sm:p-10 w-full max-w-[480px] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">
-            Create Account
+            Créer un compte
           </h1>
           <p className="text-[15px] text-slate-500">
-            Join thousands of users leveraging AI assistance.
+            Rejoignez des milliers d’utilisateurs qui profitent de l’assistance par IA.
           </p>
         </div>
 
@@ -154,7 +154,7 @@ const RegisterPage = () => {
 
           {googleLoading && (
             <p className="text-center text-sm text-slate-500 mt-3">
-              Connecting with Google...
+              Connexion avec Google...
             </p>
           )}
         </div>
@@ -164,13 +164,13 @@ const RegisterPage = () => {
             <div className="w-full border-t border-slate-200"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-slate-400">or register with email</span>
+            <span className="bg-white px-4 text-slate-400">ou inscrivez-vous avec votre e-mail</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">firstName</label>
+            <label className="text-sm font-semibold text-slate-700">Prénom</label>
             <div className="relative flex items-center">
               <span className="absolute left-4 text-slate-400 pointer-events-none">
                 <svg
@@ -190,7 +190,7 @@ const RegisterPage = () => {
               <input
                 type="text"
                 name="firstName"
-                placeholder="John"
+                placeholder="Jean"
                 value={data.firstName}
                 onChange={handleChange}
                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
@@ -199,7 +199,7 @@ const RegisterPage = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">lastName</label>
+            <label className="text-sm font-semibold text-slate-700">Nom</label>
             <div className="relative flex items-center">
               <span className="absolute left-4 text-slate-400 pointer-events-none">
                 <svg
@@ -219,7 +219,7 @@ const RegisterPage = () => {
               <input
                 type="text"
                 name="lastName"
-                placeholder="Doe"
+                placeholder="Dupont"
                 value={data.lastName}
                 onChange={handleChange}
                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
@@ -228,7 +228,7 @@ const RegisterPage = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">Email Address</label>
+            <label className="text-sm font-semibold text-slate-700">Adresse e-mail</label>
             <div className="relative flex items-center">
               <span className="absolute left-4 text-slate-400 pointer-events-none">
                 <svg
@@ -248,7 +248,7 @@ const RegisterPage = () => {
               <input
                 type="email"
                 name="email"
-                placeholder="name@example.com"
+                placeholder="nom@exemple.com"
                 value={data.email}
                 onChange={handleChange}
                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
@@ -257,7 +257,7 @@ const RegisterPage = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">Password</label>
+            <label className="text-sm font-semibold text-slate-700">Mot de passe</label>
             <div className="relative flex items-center">
               <span className="absolute left-4 text-slate-400 pointer-events-none">
                 <svg
@@ -287,7 +287,7 @@ const RegisterPage = () => {
                 onClick={togglePasswordVisibility}
                 className="absolute right-4 text-slate-400 hover:text-slate-500 transition-colors bg-transparent border-none p-1 flex outline-none"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "Masquer" : "Afficher"}
               </button>
             </div>
 
@@ -311,18 +311,18 @@ const RegisterPage = () => {
 
               <div className="flex items-center gap-1.5 mt-2 text-[13px] text-slate-500 tracking-tight">
                 <span>
-                  Strength:{" "}
+                  Niveau :{" "}
                   <span className="font-semibold text-indigo-500">
-                    {strength.label || "None"}
+                    {strength.label || "Aucun"}
                   </span>{" "}
-                  . Use 8+ characters.
+                  . Utilisez 8 caractères ou plus.
                 </span>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5 mt-1">
-            <label className="text-sm font-semibold text-slate-700">Confirm Password</label>
+            <label className="text-sm font-semibold text-slate-700">Confirmer le mot de passe</label>
             <div className="relative flex items-center">
               <span className="absolute left-4 text-slate-400 pointer-events-none">
                 <svg
@@ -354,19 +354,19 @@ const RegisterPage = () => {
             type="submit"
             className="w-full mt-4 py-3.5 bg-indigo-500 text-white rounded-xl text-[15px] font-semibold flex justify-center items-center gap-2 transition-all hover:bg-indigo-600 active:scale-[0.98] shadow-sm shadow-indigo-500/20"
           >
-            Sign Up
+            S’inscrire
           </button>
         </form>
       </div>
 
       <div className="text-center mt-5 flex flex-col gap-6">
         <p className="text-sm text-slate-500 m-0">
-          Already have an account?{" "}
+          Vous avez déjà un compte ?{" "}
           <Link
             to="/login"
             className="text-indigo-500 font-semibold no-underline hover:underline"
           >
-            Log in
+            Se connecter
           </Link>
         </p>
       </div>

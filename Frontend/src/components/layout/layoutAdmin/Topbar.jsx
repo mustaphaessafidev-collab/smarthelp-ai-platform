@@ -11,7 +11,7 @@ function Topbar() {
         padding: "0 24px",
       }}
     >
-      <h3>User Directory</h3>
+      <h3>Liste des utilisateurs</h3>
       <div>icons</div>
     </header>
   );
