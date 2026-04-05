@@ -8,6 +8,7 @@ function Sidebar() {
     { name: "Base de connaissances", path: "/admin/knowledge-base" },
     { name: "Analytique", path: "/admin/analytics" },
     { name: "Paramètres", path: "/admin/settings" },
+    { name: "Profil", path: "/admin/Profile" },
   ];
 
   return (
