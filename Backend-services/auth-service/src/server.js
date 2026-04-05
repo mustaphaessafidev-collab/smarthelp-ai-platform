@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import authRoutes from './routes/authRoutes.js'
 import adminRouter from './routes/adminRouter.js'
+import userRoutes from "./routes/userRoutes.js";
 dotenv.config()
 
 const app = express()
@@ -15,6 +16,8 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
+
+app.use("/", userRoutes);
 app.use('/', authRoutes)
 app.use('/', adminRouter)
 app.get('/', (req, res) => {

@@ -5,7 +5,7 @@ import UserManagement from "../page/pageAdmin/UserManagement";
 import KnowledgeBase from "../page/pageAdmin/KnowledgeBase";
 import Analytics from "../page/pageAdmin/Analytics";
 import Settings from "../page/pageAdmin/Settings";
-
+import AdminProfile from "../page/pageAdmin/AdminProfile";
 import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import HomePage from "../components/home/HomePage";
@@ -29,6 +29,7 @@ function AppRoutes() {
         <Route path="/page404" element={<Page404 />} />
         <Route path="/User" element={<User />} />
         <Route path="/" element={<HomePage />} />
+        
 
 
 
@@ -40,6 +41,7 @@ function AppRoutes() {
           <Route path="knowledge-base" element={<KnowledgeBase />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="Profile" element={<AdminProfile />} />
         </Route>
 
         {/* User Router     */}
@@ -47,7 +49,7 @@ function AppRoutes() {
           <Route index element={<UserDashboard />} />
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
-          <Route path="Profile" element={<Profile />} />
+          
         </Route>
     </Routes>
     

@@ -33,6 +33,14 @@ app.use(
     changeOrigin: true,
   })
 );
+
+app.use(
+  "/api/users",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+  })
+);
 // app.use(
 //   "/api/tickets",
 //   createProxyMiddleware({
