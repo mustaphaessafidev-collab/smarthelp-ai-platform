@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "../layoutAdmin/Topbar";
 
-function UserLayout() {
+function AgentLayout() {
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
@@ -18,4 +18,4 @@ function UserLayout() {
   );
 }
 
-export default UserLayout;
+export default AgentLayout;
