@@ -17,8 +17,8 @@ import AgentManagement from "../page/pageAdmin/AgentManagement";
 import UserDashboard from "../page/pageClient/Dashboard";
 import MyTickets from "../page/pageClient/MyTickets";
 import CreateTicket from "../page/pageClient/CreateTicket";
-import Profile from "../page/pageClient/Profile";
 import UserLayout from "../components/layout/layoutClient/UserLayout";
+import UserProfile from "../page/pageClient/UserProfile";
 function AppRoutes() {
   return (
     <Routes>
@@ -49,6 +49,7 @@ function AppRoutes() {
           <Route index element={<UserDashboard />} />
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
+          <Route path="Profile" element={<UserProfile />} />
           
         </Route>
     </Routes>
