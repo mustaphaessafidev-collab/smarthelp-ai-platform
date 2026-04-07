@@ -1,42 +1,61 @@
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { CgProfile } from "react-icons/cg";
+import { FaTachometerAlt, FaUserCog, FaUsers } from "react-icons/fa";
+import { Menu } from "lucide-react";
 
 function Sidebar() {
+  const [open, setOpen] = useState(true);
+
   const menu = [
-    { name: "Tableau de bord", path: "/admin" },
-    { name: "Gestion des utilisateurs", path: "/admin/users" },
-    { name: "Gestion des agents", path: "/admin/agent" },
-    { name: "Base de connaissances", path: "/admin/knowledge-base" },
-    { name: "Analytique", path: "/admin/analytics" },
-    { name: "Paramètres", path: "/admin/settings" },
-    { name: "Profil", path: "/admin/Profile" },
+    { name: "Tableau de bord", path: "/admin", icon: <FaTachometerAlt /> },
+    { name: "Gestion des utilisateurs", path: "/admin/users", icon: <FaUsers /> },
+    { name: "Gestion des agents", path: "/admin/agent", icon: <FaUserCog /> },
+    { name: "Profil", path: "/admin/Profile", icon: <CgProfile /> },
   ];
 
   return (
     <aside
-      style={{
-        width: "260px",
-        background: "#fff",
-        borderRight: "1px solid #eee",
-        padding: "20px",
-      }}
+      className={`${
+        open ? "w-[260px]" : "w-[80px]"
+      } bg-white border-r border-gray-200 p-4 h-screen transition-all duration-300`}
     >
-      <h2>SmartHelp AI</h2>
+      {/* TOP */}
+      <div className="flex items-center justify-between">
+        {open && (
+          <h2 className="text-xl font-bold text-indigo-600">
+            SmartHelp AI
+          </h2>
+        )}
 
-      <div style={{ marginTop: "30px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        {/* BUTTON */}
+        <button onClick={() => setOpen(!open)}>
+          <Menu />
+        </button>
+      </div>
+
+      {/* MENU */}
+      <div className="mt-8 flex flex-col gap-3">
         {menu.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            style={({ isActive }) => ({
-              textDecoration: "none",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              color: isActive ? "#5b5ce2" : "#333",
-              background: isActive ? "#eef0ff" : "transparent",
-              fontWeight: isActive ? "600" : "400",
-            })}
+            title={!open ? item.name : ""} // tooltip ملي يكون مسدود
+            className={({ isActive }) =>
+              `flex items-center ${
+                open ? "gap-3 px-4 justify-start" : "justify-center"
+              } py-3 rounded-lg transition
+              ${
+                isActive
+                  ? "bg-indigo-50 text-indigo-600 font-semibold"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`
+            }
           >
-            {item.name}
+            <span className="text-lg">{item.icon}</span>
+
+            {/* TEXT */}
+            {open && <span>{item.name}</span>}
           </NavLink>
         ))}
       </div>

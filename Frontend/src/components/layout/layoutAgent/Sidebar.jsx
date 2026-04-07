@@ -1,19 +1,17 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
-import { LuTicketSlash } from "react-icons/lu";
-import { IoAddOutline } from "react-icons/io5";
-import { FaTachometerAlt } from "react-icons/fa";
+import { FaTachometerAlt, FaUserCog, FaUsers } from "react-icons/fa";
 import { Menu } from "lucide-react";
 
 function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const menu = [
-    { name: "Tableau de bord", path: "/User", icon: <FaTachometerAlt /> },
-    { name: "Mes Tickets", path: "/User/MyTickets", icon: <LuTicketSlash /> },
-    { name: "Créer un ticket", path: "/User/CreateTicket", icon: <IoAddOutline /> },
-    { name: "Profil", path: "/User/Profile", icon: <CgProfile /> },
+    { name: "Tableau de bord", path: "/Agent", icon: <FaTachometerAlt /> },
+    { name: "All Tickets", path: "/Agent/AllTickets", icon: <FaUsers /> },
+    { name: "My Tickets", path: "/Agent/Tickets", icon: <FaUsers /> },
+    { name: "Profil", path: "/Agent/Profile", icon: <CgProfile /> },
   ];
 
   return (
@@ -26,7 +24,7 @@ function Sidebar() {
       <div className="flex items-center justify-between">
         {open && (
           <h2 className="text-xl font-bold text-indigo-600">
-            SmartHelp
+            SmartHelp AI
           </h2>
         )}
 
@@ -42,6 +40,7 @@ function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
+            title={!open ? item.name : ""} // tooltip ملي يكون مسدود
             className={({ isActive }) =>
               `flex items-center ${
                 open ? "gap-3 px-4 justify-start" : "justify-center"

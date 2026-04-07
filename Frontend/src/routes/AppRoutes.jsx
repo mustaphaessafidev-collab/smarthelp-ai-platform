@@ -10,24 +10,27 @@ import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import HomePage from "../components/home/HomePage";
 import VerifyCodePage from "../components/auth/verify-code";
-import Agent from "../page/agent";
+
 import Page404 from "../page/page404";
-import User from "../page/User";
+
 import AgentManagement from "../page/pageAdmin/AgentManagement";
 import UserDashboard from "../page/pageClient/Dashboard";
 import MyTickets from "../page/pageClient/MyTickets";
 import CreateTicket from "../page/pageClient/CreateTicket";
-import Profile from "../page/pageClient/Profile";
 import UserLayout from "../components/layout/layoutClient/UserLayout";
+import UserProfile from "../page/pageClient/UserProfile";
+import AgentLayout from "../components/layout/layoutAgent/AgentLayout";
+import AgentDashboard from "../page/pageAgent/AgentDashboard";
+import AgentTickets from "../page/pageAgent/AgentTickets";
+import AgentProfile from "../page/pageAgent/AgentProfile";
+import AllTickets from "../page/pageAgent/AllTickets";
 function AppRoutes() {
   return (
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-code" element={<VerifyCodePage />} />
-        <Route path="/Agent" element={<Agent />} />
         <Route path="/page404" element={<Page404 />} />
-        <Route path="/User" element={<User />} />
         <Route path="/" element={<HomePage />} />
         
 
@@ -49,7 +52,15 @@ function AppRoutes() {
           <Route index element={<UserDashboard />} />
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
+          <Route path="Profile" element={<UserProfile />} />
           
+        </Route>
+        {/* Agent Router     */}
+        <Route path="/Agent" element={<AgentLayout />}>
+          <Route index element={<AgentDashboard />} />
+          <Route path="Tickets" element={<AgentTickets />} />
+          <Route path="Profile" element={<AgentProfile />} />
+          <Route path="AllTickets" element={<AllTickets />} />          
         </Route>
     </Routes>
     
