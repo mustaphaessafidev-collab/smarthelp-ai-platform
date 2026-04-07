@@ -14,9 +14,9 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.use('/api/ticket', ticketRoutes)
+app.use('/', ticketRoutes)
 
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT || 4002
 
 app.listen(PORT, () => {
   console.log(`Ticket service running on port ${PORT}`)
