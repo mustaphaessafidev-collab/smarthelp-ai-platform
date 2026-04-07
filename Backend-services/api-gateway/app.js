@@ -31,9 +31,6 @@ app.use(
   createProxyMiddleware({
     target: process.env.ADMIN_SERVICE_URL,
     changeOrigin: true,
-    pathRewrite: {
-      "^/api/admin": "", // 👈 مهم
-    },
   })
 );
 
@@ -42,6 +39,15 @@ app.use(
   createProxyMiddleware({
     target: process.env.AUTH_SERVICE_URL,
     changeOrigin: true,
+  })
+);
+
+app.use(
+  "/api/agents",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+
   })
 );
 // app.use(

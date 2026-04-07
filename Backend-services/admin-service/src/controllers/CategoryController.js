@@ -26,3 +26,27 @@ export const getCategories = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// DELETE
+export const deleteCategory = async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  await prisma.category.delete({
+    where: { id },
+  });
+
+  res.json({ message: "Category deleted" });
+};
+
+// UPDATE
+export const updateCategory = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, description } = req.body;
+
+  const category = await prisma.category.update({
+    where: { id },
+    data: { name, description },
+  });
+
+  res.json(category);
+};
