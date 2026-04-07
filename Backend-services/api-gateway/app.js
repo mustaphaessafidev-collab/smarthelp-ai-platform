@@ -41,13 +41,13 @@ app.use(
     changeOrigin: true,
   })
 );
-// app.use(
-//   "/api/tickets",
-//   createProxyMiddleware({
-//     target: process.env.TICKET_SERVICE_URL,
-//     changeOrigin: true,
-//   })
-// );
+app.use(
+  "/api/tickets",
+  createProxyMiddleware({
+    target: process.env.TICKET_SERVICE_URL,
+    changeOrigin: true,
+  })
+);
 
 // app.use(
 //   "/api/admin",
