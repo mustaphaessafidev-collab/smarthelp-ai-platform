@@ -18,6 +18,7 @@ enum TicketStatus {
   NEW
   OPEN
   IN_PROGRESS
+  PENDING
   RESOLVED
   CLOSED
 }
@@ -29,11 +30,17 @@ enum TicketPriority {
   URGENT
 }
 
+enum MessageType{
+  USER
+  AGENT
+  AI
+}
+
 model Ticket {
   id          Int            @id @default(autoincrement())
   title       String
   description String
-  status      TicketStatus   @default(NEW)
+  status      TicketStatus   @default(New)
   priority    TicketPriority @default(MEDIUM)
 
   categoryId  Int?
@@ -44,7 +51,7 @@ model Ticket {
 
   messages    Message[]
   attachments Attachment[]
-
+  aiResult AIResult?
 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -54,7 +61,7 @@ model Category {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
-
+  
   tickets     Ticket[]
 }
 
@@ -75,9 +82,23 @@ model Attachment {
   fileUrl   String
   fileType  String?
   fileSize  Int?
-
   ticketId  Int
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model AIResult {
+  id                Int      @id @default(autoincrement())
+  summary           String?
+  predictedCategory String?
+  suggestedPriority String?
+  suggestedReply    String?
+  model             String?
+  ticketId          Int      @unique
+
+  ticket            Ticket   @relation(fields: [ticketId], references: [id])
+
+  createdAt         DateTime @default(now())
 }

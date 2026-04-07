@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import "dotenv/config";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 dotenv.config();
