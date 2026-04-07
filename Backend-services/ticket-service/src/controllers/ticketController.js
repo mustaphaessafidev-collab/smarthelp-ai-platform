@@ -26,15 +26,20 @@ export const getMyTickets = async (req,res)=>{
 
 export const createTicket = async (req, res) => {
   try {
-    const { title, description, priority, categoryId, message } = req.body;
+    const { title, description, priority, categoryId } = req.body;
+    const userId = Number(req.user?.userId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     if (!title || !description) {
       return res.status(400).json({
-        message: "title et description sont requis",
+        message: "Title and description are required",
       });
     }
 
-    const ticket = await prisma.ticket.create({
+    const newTicket = await prisma.ticket.create({
       data: {
         title,
         description,
@@ -54,19 +59,19 @@ export const createTicket = async (req, res) => {
       },
       include: {
         category: true,
-        messages: true,
+        attachments: true,
       },
     });
 
-    return res.status(201).json({
-      message: "ticket cree avec succes",
-      ticket,
+    res.status(201).json({
+      message: "Ticket created successfully",
+      ticket: ticketWithAttachments,
     });
   } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      message: "Server error",
+    console.error("Create ticket error:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };

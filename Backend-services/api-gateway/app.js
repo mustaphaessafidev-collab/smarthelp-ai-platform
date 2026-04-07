@@ -27,7 +27,21 @@ app.use(
     ignorePath: false,
   })
 );
+app.use(
+  "/api/admin",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+  })
+);
 
+app.use(
+  "/api/users",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+  })
+);
 app.use(
   "/api/tickets",
   createProxyMiddleware({

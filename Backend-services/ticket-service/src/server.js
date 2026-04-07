@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import ticketRoutes from './routes/ticketRoutes.js'
+app.use("/uploads", express.static("uploads"));
 
 dotenv.config()
 

@@ -27,7 +27,7 @@ const LoginPage = () => {
         // Validate inputs
         try{
             if (!data.email.trim() || !data.password) {
-            alert("Please enter both email and password.");
+            alert("Veuillez saisir votre e-mail et votre mot de passe.");
             return;
             }
             console.log("test")
@@ -48,13 +48,13 @@ const LoginPage = () => {
             }else{
                 navigate("/page404")
             }
-            alert("Sign in successful!");
+            alert("Connexion réussie !");
             
         // Console log the data
             console.log("Logged in data:", data);
         }catch(e){
             console.error(e);
-            alert(e.response?.data?.message || "Login failed");
+            alert(e.response?.data?.message || "Échec de la connexion");
         }
 
     };
@@ -69,13 +69,13 @@ const LoginPage = () => {
 
             <div className="bg-white rounded-[30px] p-12 w-full max-w-[470px] shadow-[0_15px_35px_rgba(0,0,0,0.04),0_5px_15px_rgba(0,0,0,0.02)] mb-6 max-sm:px-6 max-sm:py-10">
                 <div className="text-center mb-8">
-                    <h1 className="m-0 mb-2 text-[28px] font-bold text-slate-900 tracking-tight">Welcome Back</h1>
-                    <p className="m-0 text-[15px] text-slate-500">Sign in to your SmartHelp AI workspace</p>
+                    <h1 className="m-0 mb-2 text-[28px] font-bold text-slate-900 tracking-tight">Bon retour</h1>
+                    <p className="m-0 text-[15px] text-slate-500">Connectez-vous à votre espace SmartHelp AI</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-5 flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                        <label className="text-sm font-semibold text-slate-700">Adresse e-mail</label>
                         <div className="relative flex items-center">
                             <span className="absolute left-4 text-slate-400 flex pointer-events-none">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +87,7 @@ const LoginPage = () => {
                                 type="email"
                                 name="email"
                                 className="w-full py-3.5 pl-11 pr-4 text-[15px] border border-slate-200 rounded-full bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 placeholder:font-normal focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                                placeholder="name@company.com"
+                                placeholder="nom@entreprise.com"
                                 value={data.email}
                                 onChange={handleChange}
                             />
@@ -96,8 +96,8 @@ const LoginPage = () => {
 
                     <div className="mb-5 flex flex-col gap-2">
                         <div className="flex justify-between items-center">
-                            <label className="text-sm font-semibold text-slate-700">Password</label>
-                            <a href="#forgot" className="text-[13px] text-indigo-500 font-semibold no-underline transition-colors hover:text-indigo-600">Forgot Password?</a>
+                            <label className="text-sm font-semibold text-slate-700">Mot de passe</label>
+                            <a href="#forgot" className="text-[13px] text-indigo-500 font-semibold no-underline transition-colors hover:text-indigo-600">Mot de passe oublié ?</a>
                         </div>
                         <div className="relative flex items-center">
                             <span className="absolute left-4 text-slate-400 flex pointer-events-none">
@@ -118,7 +118,7 @@ const LoginPage = () => {
                                 type="button"
                                 className="absolute right-4 bg-transparent border-none text-slate-400 cursor-pointer flex p-1 rounded-full transition-colors hover:text-slate-500 outline-none focus:text-slate-600"
                                 onClick={togglePasswordVisibility}
-                                aria-label="Toggle password visibility"
+                                aria-label="Basculer la visibilité du mot de passe"
                             >
                                 {showPassword ? (
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -144,12 +144,12 @@ const LoginPage = () => {
                                 checked={data.remember}
                                 onChange={handleChange}
                             />
-                            Remember me for 30 days
+                            Se souvenir de moi pendant 30 jours
                         </label>
                     </div>
 
                     <button type="submit" className="w-full p-3.5 bg-gradient-to-br from-violet-600 to-indigo-500 text-white border-none rounded-full text-base font-semibold cursor-pointer flex justify-center items-center gap-2 transition-all shadow-[0_4px_12px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_16px_rgba(99,102,241,0.4)] active:scale-[0.98]">
-                        Sign In
+                        Se connecter
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12" />
                             <polyline points="12 5 19 12 12 19" />
@@ -158,7 +158,7 @@ const LoginPage = () => {
                 </form>
 
                 <div className="flex items-center my-7 text-center before:content-[''] before:flex-1 before:border-b before:border-slate-200 after:content-[''] after:flex-1 after:border-b after:border-slate-200">
-                    <span className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">OR CONTINUE WITH</span>
+                    <span className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">OU CONTINUER AVEC</span>
                 </div>
 
                 <div className="flex gap-4">
@@ -182,7 +182,7 @@ const LoginPage = () => {
 
             <div className="text-center flex flex-col gap-6">
                 <p className="text-sm text-slate-500 m-0">
-                    Don't have an account? <Link to="/register" href="#create" className="text-indigo-500 font-semibold no-underline hover:underline">Create an account</Link>
+                    Vous n'avez pas de compte ? <Link to="/register" href="#create" className="text-indigo-500 font-semibold no-underline hover:underline">Créer un compte</Link>
                 </p>
             </div>
         </div>

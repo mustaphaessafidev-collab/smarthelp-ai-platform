@@ -8,10 +8,10 @@ function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const menu = [
-    { name: "Tableau de bord", path: "/admin", icon: <FaTachometerAlt /> },
-    { name: "Gestion des utilisateurs", path: "/admin/users", icon: <FaUsers /> },
-    { name: "Gestion des agents", path: "/admin/agent", icon: <FaUserCog /> },
-    { name: "Profil", path: "/admin/Profile", icon: <CgProfile /> },
+    { name: "Tableau de bord", path: "/Agent", icon: <FaTachometerAlt /> },
+    { name: "All Tickets", path: "/Agent/AllTickets", icon: <FaUsers /> },
+    { name: "My Tickets", path: "/Agent/Tickets", icon: <FaUsers /> },
+    { name: "Profil", path: "/Agent/Profile", icon: <CgProfile /> },
   ];
 
   return (
