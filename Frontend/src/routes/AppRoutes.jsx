@@ -24,6 +24,7 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
+import Categories from "../page/pageAdmin/Categories";
 function AppRoutes() {
   return (
     <Routes>
@@ -45,6 +46,7 @@ function AppRoutes() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
           <Route path="Profile" element={<AdminProfile />} />
+          <Route path="Categories" element={<Categories />} />
         </Route>
 
         {/* User Router     */}
