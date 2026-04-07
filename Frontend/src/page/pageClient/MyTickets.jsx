@@ -8,6 +8,8 @@ function MyTickets() {
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
 
+  
+
   const ticketsPerPage = 5;
 
   useEffect(() => {
@@ -173,6 +175,7 @@ function MyTickets() {
               </select>
 
               <button
+              
                 onClick={clearFilters}
                 className="rounded-2xl px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-100"
               >
@@ -283,6 +286,9 @@ function MyTickets() {
               </button>
 
               {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+
+
+
                 (page) => (
                   <button
                     key={page}
