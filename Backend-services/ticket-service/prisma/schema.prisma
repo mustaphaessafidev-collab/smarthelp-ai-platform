@@ -15,6 +15,7 @@ datasource db {
 }
 
 enum TicketStatus {
+  NEW
   OPEN
   IN_PROGRESS
   RESOLVED
@@ -32,7 +33,7 @@ model Ticket {
   id          Int            @id @default(autoincrement())
   title       String
   description String
-  status      TicketStatus   @default(OPEN)
+  status      TicketStatus   @default(NEW)
   priority    TicketPriority @default(MEDIUM)
 
   categoryId  Int?
