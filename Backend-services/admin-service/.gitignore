@@ -6,3 +6,6 @@ npm-debug.log
 yarn-error.log
 .vscode
 .DS_Store
+/src/generated/prisma
+
+/src/generated/prisma
