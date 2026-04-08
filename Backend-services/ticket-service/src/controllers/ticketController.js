@@ -1,4 +1,5 @@
 import prisma from "../../lib/prisma.js";
+import axios from "axios";
 
 export const getMyTickets = async (req, res) => {
   try {
@@ -130,6 +131,7 @@ export const addMessageToTicket = async (req, res) => {
   }
 };
 
+
 export const createTicket = async (req, res) => {
   try {
     const { title, description, priority, categoryId } = req.body;
@@ -148,13 +150,39 @@ export const createTicket = async (req, res) => {
       });
     }
 
+    const categoriesRes = await axios.get("http://localhost:4000/api/tickets/categories");
+    const categories = categoriesRes.data || [];
+
+    const aiRes = await axios.post("http://localhost:4004/api/ai/analyze-ticket", {
+      title,
+      description,
+      categories,
+    });
+
+    const aiData = aiRes.data;
+
+    const matchedCategory = categories.find(
+      (cat) =>
+        cat.name.trim().toLowerCase() ===
+        (aiData.predictedCategory || "").trim().toLowerCase()
+    );
+
+    const finalCategoryId = categoryId
+      ? Number(categoryId)
+      : matchedCategory
+      ? matchedCategory.id
+      : null;
+
+    const finalPriority = priority || aiData.suggestedPriority || "MEDIUM";
+
     const newTicket = await prisma.ticket.create({
       data: {
         title,
         description,
-        priority: priority || "MEDIUM",
+        priority: finalPriority,
         createdBy: userId,
-        categoryId: categoryId ? Number(categoryId) : null,
+        categoryId: finalCategoryId,
+
         ...(files.length > 0 && {
           attachments: {
             create: files.map((file) => ({
@@ -165,6 +193,16 @@ export const createTicket = async (req, res) => {
             })),
           },
         }),
+
+        aiResult: {
+          create: {
+            summary: aiData.summary || null,
+            predictedCategory: aiData.predictedCategory || null,
+            suggestedPriority: aiData.suggestedPriority || null,
+            suggestedReply: aiData.suggestedReply || null,
+            model: "openai/gpt-oss-20b",
+          },
+        },
       },
       include: {
         attachments: true,

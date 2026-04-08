@@ -60,20 +60,12 @@ app.use(
   })
 );
 
-// app.use(
-//   "/api/admin",
-//   createProxyMiddleware({
-//     target: process.env.ADMIN_SERVICE_URL,
-//     changeOrigin: true,
-//   })
-// );
-
-// app.use(
-//   "/api/ai",
-//   createProxyMiddleware({
-//     target: process.env.AI_SERVICE_URL,
-//     changeOrigin: true,
-//   })
-// );
+app.use(
+  "/api/ai",
+  createProxyMiddleware({
+    target: process.env.AI_SERVICE_URL,
+    changeOrigin: true,
+  })
+);
 
 export default app;
