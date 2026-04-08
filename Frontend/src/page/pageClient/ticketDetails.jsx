@@ -45,7 +45,7 @@ function TicketDetails() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setNewMessage("");
@@ -90,7 +90,7 @@ function TicketDetails() {
               ticket.messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                  className={`max-w-[50%] break-words whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm ${
                     message.type === "USER"
                       ? "ml-auto bg-violet-600 text-white"
                       : "bg-slate-100 text-slate-700"

@@ -257,7 +257,87 @@ export const DeleteTicket = async (req, res) => {
     return res.status(200).json({ message: "Ticket deleted successfully" });
 
   } catch (error) {
-    console.error("Delete ticket error:", error); // 👈 شوف هنا شنو كيخرج
+    console.error("Delete ticket error:", error); 
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+export const updateTicket = async (req, res) => {
+  try {
+    const userId = Number(req.user?.userId);
+    const ticketId = Number(req.params.id);
+
+    const { title, description, priority, categoryId, removeAttachments } = req.body;
+    const files = req.files || [];
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const ticket = await prisma.ticket.findFirst({
+      where: {
+        id: ticketId,
+        createdBy: userId,
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    let parsedRemoveAttachments = [];
+
+    if (removeAttachments) {
+      if (Array.isArray(removeAttachments)) {
+        parsedRemoveAttachments = removeAttachments.map((id) => Number(id));
+      } else {
+        parsedRemoveAttachments = [Number(removeAttachments)];
+      }
+    }
+
+    if (parsedRemoveAttachments.length > 0) {
+      await prisma.attachment.deleteMany({
+        where: {
+          id: { in: parsedRemoveAttachments },
+          ticketId,
+        },
+      });
+    }
+
+    const updatedTicket = await prisma.ticket.update({
+      where: { id: ticketId },
+      data: {
+        ...(title && { title }),
+        ...(description && { description }),
+        ...(priority && { priority }),
+        ...(categoryId !== undefined && {
+          categoryId: categoryId ? Number(categoryId) : null,
+        }),
+        ...(files.length > 0 && {
+          attachments: {
+            create: files.map((file) => ({
+              fileName: file.originalname,
+              fileUrl: file.path,
+              fileType: file.mimetype,
+              fileSize: file.size,
+            })),
+          },
+        }),
+      },
+      include: {
+        attachments: true,
+        aiResult: true,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Ticket updated successfully",
+      ticket: updatedTicket,
+    });
+  } catch (error) {
+    console.error("Update ticket error:", error);
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,

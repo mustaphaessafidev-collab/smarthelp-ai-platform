@@ -25,6 +25,7 @@ import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
 import TicketDetails from "../page/pageClient/ticketDetails";
+import UpdateTicket from "../page/pageClient/updateTicket";
 function AppRoutes() {
   return (
     <Routes>
@@ -54,6 +55,7 @@ function AppRoutes() {
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
           <Route path="TicketDetails/:id" element={<TicketDetails/>}/>
+          <Route path="UpdateTicket/:id" element={<UpdateTicket />} />
           <Route path="Profile" element={<UserProfile />} />
           
         </Route>

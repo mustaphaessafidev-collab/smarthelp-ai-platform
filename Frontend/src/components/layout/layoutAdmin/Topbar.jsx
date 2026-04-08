@@ -19,14 +19,14 @@ function Topbar() {
         <h2 className="text-indigo-600 text-xl font-semibold">
           SmartHelp
         </h2>
-        <span className="text-gray-500 mt-2">{user.role}</span>
+        {/* <span className="text-gray-500 mt-2">{user.role}</span> */}
       </div>
 
       {/* RIGHT */}
       <div className="flex items-center gap-4">
         
         {/* User Info */}
-         <div className="flex items-center gap-2">
+         {/* <div className="flex items-center gap-2">
   
             {user?.profileImage ? (
                 <img
@@ -45,19 +45,19 @@ function Topbar() {
                 {user?.firstName}
             </span>
 
-            </div>
+            </div> */}
 
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl 
+          className="flex items-center gap-2 px-4 py-2 rounded-xl 
                     bg-gradient-to-r from-indigo-600 to-purple-600 
                     text-white font-medium 
                     hover:from-indigo-700 hover:to-purple-700 
                     transition-all duration-200 shadow-md"
         >
           <IoIosLogOut className="text-xl" />
-          <span>Logout</span>
+          {/* <span>Logout</span> */}
         </button>
 
       </div>

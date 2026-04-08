@@ -297,6 +297,7 @@ function MyTickets() {
                           </button>
 
                           <button
+                          onClick={() => navigate(`/User/UpdateTicket/${ticket.id}`)}
                             className="rounded-full p-2 text-blue-600 hover:bg-blue-50"
                             title="Modifier"
                           >
