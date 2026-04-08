@@ -30,7 +30,7 @@ app.use(
 app.use(
   "/api/admin",
   createProxyMiddleware({
-    target: process.env.AUTH_SERVICE_URL,
+    target: process.env.ADMIN_SERVICE_URL,
     changeOrigin: true,
   })
 );
@@ -42,10 +42,20 @@ app.use(
     changeOrigin: true,
   })
 );
+
+app.use(
+  "/api/agents",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+
+  })
+);
+
 app.use(
   "/api/tickets",
   createProxyMiddleware({
-    target: process.env.TICKET_SERVICE_URL,
+    target: `${process.env.TICKET_SERVICE_URL}/api/tickets`,
     changeOrigin: true,
   })
 );

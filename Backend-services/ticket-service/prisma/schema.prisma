@@ -40,11 +40,10 @@ model Ticket {
   id          Int            @id @default(autoincrement())
   title       String
   description String
-  status      TicketStatus   @default(New)
+  status      TicketStatus   @default(NEW)
   priority    TicketPriority @default(MEDIUM)
 
   categoryId  Int?
-  category    Category?      @relation(fields: [categoryId], references: [id])
 
   createdBy   Int
   assignedTo  Int?
@@ -57,13 +56,6 @@ model Ticket {
   updatedAt   DateTime       @updatedAt
 }
 
-model Category {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  
-  tickets     Ticket[]
-}
 
 model Message {
   id        Int      @id @default(autoincrement())
@@ -72,7 +64,7 @@ model Message {
   ticketId  Int
 
   ticket    Ticket   @relation(fields: [ticketId], references: [id])
-
+  type      MessageType @default(USER)
   createdAt DateTime @default(now())
 }
 

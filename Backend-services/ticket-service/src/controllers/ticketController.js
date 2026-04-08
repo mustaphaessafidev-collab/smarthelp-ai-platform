@@ -1,41 +1,51 @@
 import prisma from "../../lib/prisma.js";
 
+export const getMyTickets = async (req, res) => {
+  try {
+    const userId = Number(req.user?.userId);
 
-export const getMyTickets = async (req,res)=>{
-  try{
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
     const tickets = await prisma.ticket.findMany({
-      where:{
-          createdBy: req.user.userId,},
-          include:{
-            category: true,
-            messages : true,
-          },
-          orderBy:{
-            createdAt: "desc",
-          }
+      where: {
+        createdBy: userId,
+      },
+      include: {
+        attachments: true,
+        aiResult: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
+
     return res.status(200).json({
-      message:"Tickets retrieved successfully",
+      message: "Tickets retrieved successfully",
       tickets,
     });
-    
-  }catch(error){
-    console.error(error);
+  } catch (error) {
+    console.error("Get my tickets error:", error);
     return res.status(500).json({
-      message:"Server error",
+      message: "Server error",
+      error: error.message,
     });
   }
-}
-
-
+};
 
 export const createTicket = async (req, res) => {
   try {
     const { title, description, priority, categoryId } = req.body;
     const userId = Number(req.user?.userId);
+    const files = req.files || [];
 
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
     }
 
     if (!title || !description) {
@@ -49,35 +59,35 @@ export const createTicket = async (req, res) => {
         title,
         description,
         priority: priority || "MEDIUM",
-        createdBy: req.user.userId,
-        categoryId: categoryId || null,
+        createdBy: userId,
+        categoryId: categoryId ? Number(categoryId) : null,
 
-        ...(message && {
-          messages: {
-            create: {
-              content: message,
-              authorId: req.user.userId,
-              type: "USER",
-            },
+        ...(files.length > 0 && {
+          attachments: {
+            create: files.map((file) => ({
+              fileName: file.originalname,
+              fileUrl: file.path,
+              fileType: file.mimetype,
+              fileSize: file.size,
+            })),
           },
         }),
       },
       include: {
-        category: true,
         attachments: true,
+        aiResult: true,
       },
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Ticket created successfully",
-      ticket: ticketWithAttachments,
+      ticket: newTicket,
     });
   } catch (error) {
     console.error("Create ticket error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Internal server error",
       error: error.message,
     });
   }
 };
-

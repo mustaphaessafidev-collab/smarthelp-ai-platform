@@ -1,32 +1,47 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 function MyTickets() {
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
-  const [test,setTest]=useState("test");
-
-  
 
   const ticketsPerPage = 5;
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/tickets/my-tickets", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setTickets(response.data.tickets || []);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la récupération des tickets :", error);
-      });
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const [ticketsRes, categoriesRes] = await Promise.all([
+          axios.get("http://localhost:4000/api/tickets/my-tickets", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          axios.get("http://localhost:4000/api/tickets/categories"),
+        ]);
+
+        setTickets(ticketsRes.data.tickets || []);
+        setCategories(categoriesRes.data || []);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données :", error);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  const categoriesMap = useMemo(() => {
+    return categories.reduce((acc, category) => {
+      acc[category.id] = category.name;
+      return acc;
+    }, {});
+  }, [categories]);
 
   const translateStatus = (status) => {
     switch (status) {
@@ -36,6 +51,8 @@ function MyTickets() {
         return "Ouvert";
       case "IN_PROGRESS":
         return "En cours";
+      case "PENDING":
+        return "En attente";
       case "RESOLVED":
         return "Résolu";
       case "CLOSED":
@@ -47,6 +64,8 @@ function MyTickets() {
 
   const translatePriority = (priority) => {
     switch (priority) {
+      case "URGENT":
+        return "Urgente";
       case "HIGH":
         return "Élevée";
       case "MEDIUM":
@@ -66,6 +85,8 @@ function MyTickets() {
         return "bg-blue-100 text-blue-700";
       case "IN_PROGRESS":
         return "bg-amber-100 text-amber-700";
+      case "PENDING":
+        return "bg-orange-100 text-orange-700";
       case "RESOLVED":
         return "bg-green-100 text-green-700";
       case "CLOSED":
@@ -77,6 +98,8 @@ function MyTickets() {
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
+      case "URGENT":
+        return "bg-red-200 text-red-800";
       case "HIGH":
         return "bg-red-100 text-red-700";
       case "MEDIUM":
@@ -133,7 +156,7 @@ function MyTickets() {
             </p>
           </div>
 
-          <button className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700">
+          <button onClick={() => navigate("/User/CreateTicket")} className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700">
             + Nouveau ticket
           </button>
         </div>
@@ -160,6 +183,7 @@ function MyTickets() {
                 <option value="NEW">Nouveau</option>
                 <option value="OPEN">Ouvert</option>
                 <option value="IN_PROGRESS">En cours</option>
+                <option value="PENDING">En attente</option>
                 <option value="RESOLVED">Résolu</option>
                 <option value="CLOSED">Fermé</option>
               </select>
@@ -170,13 +194,13 @@ function MyTickets() {
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none focus:border-violet-400"
               >
                 <option value="ALL">Priorité : Toutes</option>
+                <option value="URGENT">Urgente</option>
                 <option value="HIGH">Élevée</option>
                 <option value="MEDIUM">Moyenne</option>
                 <option value="LOW">Faible</option>
               </select>
 
               <button
-              
                 onClick={clearFilters}
                 className="rounded-2xl px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-100"
               >
@@ -191,7 +215,6 @@ function MyTickets() {
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-50">
                 <tr className="uppercase tracking-wider text-slate-500">
-                 
                   <th className="px-6 py-4">Sujet</th>
                   <th className="px-6 py-4">Statut</th>
                   <th className="px-6 py-4">Catégorie</th>
@@ -208,7 +231,6 @@ function MyTickets() {
                       key={ticket.id}
                       className="border-t border-slate-200 transition hover:bg-slate-50"
                     >
-                    
                       <td className="px-6 py-5">
                         <div className="font-semibold text-slate-900">
                           {ticket.title}
@@ -229,7 +251,7 @@ function MyTickets() {
                       </td>
 
                       <td className="px-6 py-5 text-slate-600">
-                        {ticket.category?.name || "Aucune catégorie"}
+                        {categoriesMap[ticket.categoryId] || "Aucune catégorie"}
                       </td>
 
                       <td className="px-6 py-5">
@@ -257,7 +279,7 @@ function MyTickets() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="py-10 text-center text-slate-500">
+                    <td colSpan="6" className="py-10 text-center text-slate-500">
                       Aucun ticket trouvé
                     </td>
                   </tr>
@@ -287,9 +309,6 @@ function MyTickets() {
               </button>
 
               {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-
-
-
                 (page) => (
                   <button
                     key={page}
