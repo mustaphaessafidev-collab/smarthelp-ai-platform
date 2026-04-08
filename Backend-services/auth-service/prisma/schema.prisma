@@ -39,7 +39,7 @@ model User {
   verificationCode  String?      
   codeExpiresAt     DateTime?    
   resetPasswordCode      String?
-resetPasswordExpiresAt DateTime?
+  resetPasswordExpiresAt DateTime?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 }

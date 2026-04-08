@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'SmartHelp AI Backend is running' })
 })
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4001; 
 
 app.listen(PORT, () => {
   console.log(`Auth service running on port ${PORT}`);

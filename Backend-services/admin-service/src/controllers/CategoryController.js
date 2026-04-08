@@ -36,7 +36,7 @@ export const deleteCategory = async (req, res) => {
   });
 
   res.json({ message: "Category deleted" });
-};
+}; 
 
 // UPDATE
 export const updateCategory = async (req, res) => {
