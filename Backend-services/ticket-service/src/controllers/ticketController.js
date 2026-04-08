@@ -14,6 +14,11 @@ export const getMyTickets = async (req,res)=>{
             createdAt: "desc",
           }
     });
+    return res.status(200).json({
+      message:"Tickets retrieved successfully",
+      tickets,
+    });
+    
   }catch(error){
     console.error(error);
     return res.status(500).json({
