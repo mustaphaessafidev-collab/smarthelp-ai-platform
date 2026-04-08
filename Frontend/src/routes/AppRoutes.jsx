@@ -24,13 +24,15 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
+import Categories from "../page/pageAdmin/Categories";
+import ErrorPage from "../page/ErrorPage";
 function AppRoutes() {
   return (
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-code" element={<VerifyCodePage />} />
-        <Route path="/page404" element={<Page404 />} />
+        
         <Route path="/" element={<HomePage />} />
         
 
@@ -45,6 +47,8 @@ function AppRoutes() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
           <Route path="Profile" element={<AdminProfile />} />
+          <Route path="Categories" element={<Categories />} />
+          {/* <Route path="*" element={<ErrorPage />} /> */}
         </Route>
 
         {/* User Router     */}
@@ -53,6 +57,7 @@ function AppRoutes() {
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
           <Route path="Profile" element={<UserProfile />} />
+          {/* <Route path="/" element={<ErrorPage />} /> */}
           
         </Route>
         {/* Agent Router     */}
@@ -60,8 +65,11 @@ function AppRoutes() {
           <Route index element={<AgentDashboard />} />
           <Route path="Tickets" element={<AgentTickets />} />
           <Route path="Profile" element={<AgentProfile />} />
-          <Route path="AllTickets" element={<AllTickets />} />          
+          <Route path="AllTickets" element={<AllTickets />} />  
+          {/* <Route path="*" element={<ErrorPage />} />         */}
         </Route>
+
+        
     </Routes>
     
   );
