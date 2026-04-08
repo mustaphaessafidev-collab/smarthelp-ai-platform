@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {Eye} from "lucide-react";
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -193,9 +194,13 @@ function UserDashboard() {
                       </td>
 
                       <td className="px-6 py-4">
-                        <button className="font-medium text-violet-600 hover:underline">
-                          Voir
-                        </button>
+                        <button
+                            onClick={() => navigate(`/User/TicketDetails/${ticket.id}`)}
+                            className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
+                            title="Voir"
+                          >
+                            <Eye size={18} />
+                          </button>
                       </td>
                     </tr>
                   ))

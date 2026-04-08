@@ -24,8 +24,8 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
-import Categories from "../page/pageAdmin/Categories";
-import ErrorPage from "../page/ErrorPage";
+import TicketDetails from "../page/pageClient/ticketDetails";
+import UpdateTicket from "../page/pageClient/updateTicket";
 function AppRoutes() {
   return (
     <Routes>
@@ -56,6 +56,8 @@ function AppRoutes() {
           <Route index element={<UserDashboard />} />
           <Route path="MyTickets" element={<MyTickets />} />
           <Route path="CreateTicket" element={<CreateTicket />} />
+          <Route path="TicketDetails/:id" element={<TicketDetails/>}/>
+          <Route path="UpdateTicket/:id" element={<UpdateTicket />} />
           <Route path="Profile" element={<UserProfile />} />
           {/* <Route path="/" element={<ErrorPage />} /> */}
           
