@@ -150,11 +150,9 @@ export const createTicket = async (req, res) => {
       });
     }
 
-    // 1) Get categories
     const categoriesRes = await axios.get("http://localhost:4000/api/tickets/categories");
     const categories = categoriesRes.data || [];
 
-    // 2) Ask AI service
     const aiRes = await axios.post("http://localhost:4004/api/ai/analyze-ticket", {
       title,
       description,
@@ -163,14 +161,12 @@ export const createTicket = async (req, res) => {
 
     const aiData = aiRes.data;
 
-    // 3) Find predicted category id from returned category name
     const matchedCategory = categories.find(
       (cat) =>
         cat.name.trim().toLowerCase() ===
         (aiData.predictedCategory || "").trim().toLowerCase()
     );
 
-    // 4) Final category and priority
     const finalCategoryId = categoryId
       ? Number(categoryId)
       : matchedCategory
@@ -179,7 +175,6 @@ export const createTicket = async (req, res) => {
 
     const finalPriority = priority || aiData.suggestedPriority || "MEDIUM";
 
-    // 5) Create ticket + AIResult
     const newTicket = await prisma.ticket.create({
       data: {
         title,
