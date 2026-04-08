@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+
 function MyTickets() {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
@@ -35,6 +37,21 @@ function MyTickets() {
 
     fetchData();
   }, []);
+
+  const DeleteTicket= async(id)=>{
+    try{
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:4000/api/tickets/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setTickets((prev) => prev.filter((ticket) => ticket.id !== id));
+    } catch (error) {
+      console.error("Erreur lors de la suppression du ticket :", error);
+    }
+  }
+
 
   const categoriesMap = useMemo(() => {
     return categories.reduce((acc, category) => {
@@ -156,7 +173,10 @@ function MyTickets() {
             </p>
           </div>
 
-          <button onClick={() => navigate("/User/CreateTicket")} className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700">
+          <button
+            onClick={() => navigate("/User/CreateTicket")}
+            className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700"
+          >
             + Nouveau ticket
           </button>
         </div>
@@ -220,7 +240,7 @@ function MyTickets() {
                   <th className="px-6 py-4">Catégorie</th>
                   <th className="px-6 py-4">Priorité</th>
                   <th className="px-6 py-4">Dernière mise à jour</th>
-                  <th className="px-6 py-4"></th>
+                  <th className="px-6 py-4">Actions</th>
                 </tr>
               </thead>
 
@@ -242,9 +262,7 @@ function MyTickets() {
 
                       <td className="px-6 py-5">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                            ticket.status
-                          )}`}
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}
                         >
                           {translateStatus(ticket.status)}
                         </span>
@@ -256,9 +274,7 @@ function MyTickets() {
 
                       <td className="px-6 py-5">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getPriorityStyle(
-                            ticket.priority
-                          )}`}
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getPriorityStyle(ticket.priority)}`}
                         >
                           {translatePriority(ticket.priority)}
                         </span>
@@ -270,10 +286,31 @@ function MyTickets() {
                         ).toLocaleDateString("fr-FR")}
                       </td>
 
-                      <td className="px-6 py-5 text-right">
-                        <button className="text-lg text-slate-400 hover:text-violet-600">
-                          ›
-                        </button>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => navigate(`/User/TicketDetails/${ticket.id}`)}
+                            className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
+                            title="Voir"
+                          >
+                            <Eye size={18} />
+                          </button>
+
+                          <button
+                            className="rounded-full p-2 text-blue-600 hover:bg-blue-50"
+                            title="Modifier"
+                          >
+                            <Pencil size={18} />
+                          </button>
+
+                          <button
+                            className="rounded-full p-2 text-red-600 hover:bg-red-50"
+                            title="Supprimer"
+                            onClick={() => DeleteTicket(ticket.id)}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -294,8 +331,7 @@ function MyTickets() {
               {filteredTickets.length === 0
                 ? 0
                 : (currentPage - 1) * ticketsPerPage + 1}{" "}
-              à{" "}
-              {Math.min(currentPage * ticketsPerPage, filteredTickets.length)}{" "}
+              à {Math.min(currentPage * ticketsPerPage, filteredTickets.length)}{" "}
               sur {filteredTickets.length} tickets
             </p>
 
