@@ -11,6 +11,7 @@ function Sidebar() {
     { name: "Tableau de bord", path: "/admin", icon: <FaTachometerAlt /> },
     { name: "Gestion des utilisateurs", path: "/admin/users", icon: <FaUsers /> },
     { name: "Gestion des agents", path: "/admin/agent", icon: <FaUserCog /> },
+    { name: "Gestion des catégories", path: "/admin/Categories", icon: <FaUserCog /> },
     { name: "Profil", path: "/admin/Profile", icon: <CgProfile /> },
   ];
 
