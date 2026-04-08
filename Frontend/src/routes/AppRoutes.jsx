@@ -10,6 +10,7 @@ import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import HomePage from "../components/home/HomePage";
 import VerifyCodePage from "../components/auth/verify-code";
+import Categories from "../page/pageAdmin/Categories";
 
 import Page404 from "../page/page404";
 
@@ -26,6 +27,7 @@ import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
 import TicketDetails from "../page/pageClient/ticketDetails";
 import UpdateTicket from "../page/pageClient/updateTicket";
+
 function AppRoutes() {
   return (
     <Routes>
