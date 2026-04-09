@@ -387,19 +387,23 @@ export const updateTicket = async (req, res) => {
 //agent controllers
 export const getAllTickets = async (req, res) => {
   try {
+    const userId = Number(req.user?.userId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const tickets = await prisma.ticket.findMany({
-      include: {
-        // ⚠️ تأكد من relation names فـ schema
-        attachments: true,
-        aiResult: true,
-      },
       orderBy: { createdAt: "desc" },
     });
 
-    res.status(200).json(tickets);
+    res.status(200).json({
+      message: "All tickets retrieved successfully",
+      tickets,
+    });
   } catch (error) {
     console.error("Get all tickets error:", error);
-    res.status(500).json({ message: "Erreur serveur" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -412,7 +416,6 @@ export const assignTicket = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // ✅ جيب ticket بوحدو
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId },
     });
@@ -421,7 +424,7 @@ export const assignTicket = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
-    if (ticket.assignedTo) {
+    if (ticket.assignedTo !== null) {
       return res.status(400).json({
         message: "Ticket already assigned",
       });
@@ -430,7 +433,7 @@ export const assignTicket = async (req, res) => {
     const updatedTicket = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
-        assignedTo: agentId, // ✅ اسم صحيح من schema
+        assignedTo: agentId,
         status: "IN_PROGRESS",
       },
     });
@@ -439,16 +442,15 @@ export const assignTicket = async (req, res) => {
       message: "Ticket assigned successfully",
       ticket: updatedTicket,
     });
-
   } catch (error) {
     console.error("Assign ticket error:", error);
-    res.status(500).json({ message: "Erreur serveur" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 export const getMyAssignedTickets = async (req, res) => {
   try {
-    const agentId = Number(req.user?.userId); // ✅ FIX
+    const agentId = Number(req.user?.userId);
 
     if (!agentId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -456,21 +458,20 @@ export const getMyAssignedTickets = async (req, res) => {
 
     const tickets = await prisma.ticket.findMany({
       where: {
-        assignedToId: agentId,
-      },
-      include: {
-        attachments: true,
-        aiResult: true,
+        assignedTo: agentId,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    res.status(200).json(tickets);
+    res.status(200).json({
+      message: "My assigned tickets retrieved successfully",
+      tickets,
+    });
   } catch (error) {
     console.error("Get my assigned tickets error:", error);
-    res.status(500).json({ message: "Erreur serveur" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
