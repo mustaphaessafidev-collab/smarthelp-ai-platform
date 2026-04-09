@@ -26,13 +26,13 @@ import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
 import TicketDetails from "../page/pageClient/ticketDetails";
 import UpdateTicket from "../page/pageClient/updateTicket";
+import Categories from "../page/pageAdmin/Categories";
 function AppRoutes() {
   return (
     <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-code" element={<VerifyCodePage />} />
-        
         <Route path="/" element={<HomePage />} />
         
 
@@ -48,7 +48,7 @@ function AppRoutes() {
           <Route path="settings" element={<Settings />} />
           <Route path="Profile" element={<AdminProfile />} />
           <Route path="Categories" element={<Categories />} />
-          {/* <Route path="*" element={<ErrorPage />} /> */}
+          
         </Route>
 
         {/* User Router     */}
@@ -59,7 +59,7 @@ function AppRoutes() {
           <Route path="TicketDetails/:id" element={<TicketDetails/>}/>
           <Route path="UpdateTicket/:id" element={<UpdateTicket />} />
           <Route path="Profile" element={<UserProfile />} />
-          {/* <Route path="/" element={<ErrorPage />} /> */}
+          
           
         </Route>
         {/* Agent Router     */}
@@ -68,7 +68,7 @@ function AppRoutes() {
           <Route path="Tickets" element={<AgentTickets />} />
           <Route path="Profile" element={<AgentProfile />} />
           <Route path="AllTickets" element={<AllTickets />} />  
-          {/* <Route path="*" element={<ErrorPage />} />         */}
+          
         </Route>
 
         
