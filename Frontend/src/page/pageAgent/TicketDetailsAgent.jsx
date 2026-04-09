@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import { Send, Paperclip, User } from "lucide-react";
+import { Send, Paperclip, User, ArrowLeft } from "lucide-react";
 import ticketApi from "../../services/ticketApi";
 
-function TicketDetails() {
+function TicketDetailsAgent() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const socketRef = useRef(null);
 
   const [ticket, setTicket] = useState(null);
@@ -81,7 +82,7 @@ function TicketDetails() {
 
       await ticketApi.post(`/${id}/messages`, {
         content: newMessage,
-        messageType: "USER",
+        messageType: "AGENT",
       });
 
       // Message will be added by socket event
@@ -102,7 +103,7 @@ function TicketDetails() {
   };
 
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString("fr-FR", {
+    return new Date(date).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -111,17 +112,17 @@ function TicketDetails() {
   const translateStatus = (status) => {
     switch (status) {
       case "NEW":
-        return "Nouveau";
+        return "New";
       case "OPEN":
-        return "Ouvert";
+        return "Open";
       case "IN_PROGRESS":
-        return "En cours";
+        return "In Progress";
       case "PENDING":
-        return "En attente";
+        return "Pending";
       case "RESOLVED":
-        return "Résolu";
+        return "Resolved";
       case "CLOSED":
-        return "Fermé";
+        return "Closed";
       default:
         return status;
     }
@@ -130,13 +131,13 @@ function TicketDetails() {
   const translatePriority = (priority) => {
     switch (priority) {
       case "URGENT":
-        return "Urgente";
+        return "Urgent";
       case "HIGH":
-        return "Élevée";
+        return "High";
       case "MEDIUM":
-        return "Moyenne";
+        return "Medium";
       case "LOW":
-        return "Faible";
+        return "Low";
       default:
         return priority;
     }
@@ -145,7 +146,7 @@ function TicketDetails() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f6f7fb]">
-        <p className="text-sm text-slate-500">Chargement...</p>
+        <p className="text-sm text-slate-500">Loading...</p>
       </div>
     );
   }
@@ -153,7 +154,7 @@ function TicketDetails() {
   if (!ticket) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f6f7fb]">
-        <p className="text-sm text-slate-500">Ticket introuvable.</p>
+        <p className="text-sm text-slate-500">Ticket not found.</p>
       </div>
     );
   }
@@ -164,9 +165,17 @@ function TicketDetails() {
         {/* Header */}
         <div className="border-b border-slate-200 px-5 py-4 md:px-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-lg font-bold text-slate-900">{ticket.title}</h1>
-              <p className="mt-1 text-sm text-slate-500">{ticket.description}</p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate("/agent/Tickets")}
+                className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <div>
+                <h1 className="text-lg font-bold text-slate-900">{ticket.title}</h1>
+                <p className="mt-1 text-sm text-slate-500">{ticket.description}</p>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -185,29 +194,29 @@ function TicketDetails() {
           <div className="mx-auto max-w-4xl space-y-5">
             {messages?.length > 0 ? (
               messages.map((message) => {
-                const isUser = message.type === "USER";
+                const isAgent = message.type === "AGENT";
 
                 return (
                   <div
                     key={message.id}
                     className={`flex items-start gap-3 ${
-                      isUser ? "justify-end" : "justify-start"
+                      isAgent ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {!isUser && (
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-200 text-blue-600">
+                    {!isAgent && (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-500">
                         <User size={14} />
                       </div>
                     )}
 
                     <div
                       className={`flex w-full max-w-[85%] md:max-w-[50%] flex-col ${
-                        isUser ? "items-end" : "items-start"
+                        isAgent ? "items-end" : "items-start"
                       }`}
                     >
                       <div
                         className={`w-fit max-w-full overflow-hidden break-words [overflow-wrap:anywhere] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
-                          isUser
+                          isAgent
                             ? "rounded-tr-md bg-violet-500 text-white"
                             : "rounded-tl-md border border-slate-200 bg-white text-slate-700"
                         }`}
@@ -217,11 +226,11 @@ function TicketDetails() {
 
                       <span className="mt-1 px-1 text-[11px] text-slate-400">
                         {formatTime(message.createdAt)}
-                        {isUser ? " • Vous" : " • Support"}
+                        {isAgent ? " • You" : " • Customer"}
                       </span>
                     </div>
 
-                    {isUser && (
+                    {isAgent && (
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600">
                         <User size={14} />
                       </div>
@@ -231,7 +240,7 @@ function TicketDetails() {
               })
             ) : (
               <p className="text-center text-sm text-slate-500">
-                Aucun message pour le moment.
+                No messages yet.
               </p>
             )}
 
@@ -255,7 +264,7 @@ function TicketDetails() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={1}
-                placeholder="Tapez votre message..."
+                placeholder="Type your message..."
                 className="max-h-32 min-h-[40px] flex-1 resize-none bg-transparent px-1 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-400"
               />
 
@@ -269,7 +278,7 @@ function TicketDetails() {
             </div>
 
             <p className="mt-2 text-right text-[11px] text-slate-400">
-              Appuyez sur Entrée pour envoyer
+              Press Enter to send
             </p>
           </div>
         </div>
@@ -278,4 +287,4 @@ function TicketDetails() {
   );
 }
 
-export default TicketDetails;
+export default TicketDetailsAgent;

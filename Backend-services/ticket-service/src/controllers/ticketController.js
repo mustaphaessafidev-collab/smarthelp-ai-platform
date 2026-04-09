@@ -46,10 +46,9 @@ export const getTicketById = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const ticket = await prisma.ticket.findFirst({
+    const ticket = await prisma.ticket.findUnique({
       where: {
         id: ticketId,
-        createdBy: userId,
       },
       include: {
         messages: {
@@ -68,6 +67,16 @@ export const getTicketById = async (req, res) => {
       });
     }
 
+    // Check if user is creator or assigned agent
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden - You don't have access to this ticket",
+      });
+    }
+
     return res.status(200).json({
       ticket,
     });
@@ -80,11 +89,12 @@ export const getTicketById = async (req, res) => {
   }
 };
 
+
 export const addMessageToTicket = async (req, res) => {
   try {
     const userId = Number(req.user?.userId);
     const ticketId = Number(req.params.id);
-    const { content } = req.body;
+    const { content, messageType } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -96,11 +106,9 @@ export const addMessageToTicket = async (req, res) => {
       });
     }
 
-    const ticket = await prisma.ticket.findFirst({
-      where: {
-        id: ticketId,
-        createdBy: userId,
-      },
+    // Check if user is creator or assigned agent
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
     });
 
     if (!ticket) {
@@ -109,14 +117,38 @@ export const addMessageToTicket = async (req, res) => {
       });
     }
 
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden",
+      });
+    }
+
+    const type = isAgent ? "AGENT" : "USER";
+
     const message = await prisma.message.create({
       data: {
         content,
         authorId: userId,
         ticketId: ticketId,
-        type: "USER",
+        type,
       },
     });
+
+    // Emit socket event
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`ticket-${ticketId}`).emit("newMessage", {
+        id: message.id,
+        content: message.content,
+        authorId: message.authorId,
+        ticketId: message.ticketId,
+        type: message.type,
+        createdAt: message.createdAt,
+      });
+    }
 
     return res.status(201).json({
       message: "Message added successfully",
@@ -382,3 +414,96 @@ export const updateTicket = async (req, res) => {
     });
   }
 };
+
+
+//agent controllers
+export const getAllTickets = async (req, res) => {
+  try {
+    const userId = Number(req.user?.userId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tickets = await prisma.ticket.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.status(200).json({
+      message: "All tickets retrieved successfully",
+      tickets,
+    });
+  } catch (error) {
+    console.error("Get all tickets error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const assignTicket = async (req, res) => {
+  try {
+    const ticketId = Number(req.params.ticketId);
+    const agentId = Number(req.user?.userId);
+
+    if (!agentId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    if (ticket.assignedTo !== null) {
+      return res.status(400).json({
+        message: "Ticket already assigned",
+      });
+    }
+
+    const updatedTicket = await prisma.ticket.update({
+      where: { id: ticketId },
+      data: {
+        assignedTo: agentId,
+        status: "IN_PROGRESS",
+      },
+    });
+
+    res.status(200).json({
+      message: "Ticket assigned successfully",
+      ticket: updatedTicket,
+    });
+  } catch (error) {
+    console.error("Assign ticket error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getMyAssignedTickets = async (req, res) => {
+  try {
+    const agentId = Number(req.user?.userId);
+
+    if (!agentId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        assignedTo: agentId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json({
+      message: "My assigned tickets retrieved successfully",
+      tickets,
+    });
+  } catch (error) {
+    console.error("Get my assigned tickets error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+

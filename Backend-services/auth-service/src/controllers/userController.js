@@ -27,18 +27,29 @@ export const getMyProfile = async (req, res) => {
 // UPDATE profile
 export const updateMyProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, profileImage } = req.body;
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file); // 👈 مهم
 
+    const { firstName, lastName, email } = req.body;
+
+    const profileImage = req.file
+      ? `/uploads/${req.file.filename}`
+      : undefined;
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
-      data: { firstName, lastName, email, profileImage },
+      data: {
+        firstName,
+        lastName,
+        email,
+        ...(profileImage && { profileImage }),
+      },
     });
 
-    res.json({
-      message: "Profil mis à jour",
-      user: updatedUser,
-    });
+    res.json({ message: "ok", user: updatedUser });
   } catch (error) {
+    console.log("ERROR:", error); // 👈 شوف هنا
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
