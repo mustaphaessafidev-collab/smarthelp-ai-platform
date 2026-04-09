@@ -1,7 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react";
 import api from "../../services/api";
 
 function AgentTickets() {
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,12 +98,13 @@ function AgentTickets() {
 
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200">
           {/* HEADER */}
-          <div className="grid grid-cols-5 gap-4 p-5 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          <div className="grid grid-cols-6 gap-4 p-5 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
             <div>Subject</div>
             <div>Status</div>
             <div>Category</div>
             <div>Priority</div>
             <div>Date</div>
+            <div>Actions</div>
           </div>
 
           {/* EMPTY STATE */}
@@ -120,7 +124,7 @@ function AgentTickets() {
           {tickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="grid grid-cols-5 gap-4 p-5 border-b border-slate-100 items-center hover:bg-slate-50 transition-colors"
+              className="grid grid-cols-6 gap-4 p-5 border-b border-slate-100 items-center hover:bg-slate-50 transition-colors"
             >
               {/* TITLE */}
               <div className="min-w-0">
@@ -154,6 +158,17 @@ function AgentTickets() {
                   month: "short",
                   day: "numeric",
                 })}
+              </div>
+
+              {/* ACTIONS */}
+              <div>
+                <button
+                  onClick={() => navigate(`/agent/ticket/${ticket.id}`)}
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-violet-100 text-violet-600 hover:bg-violet-200 transition-colors"
+                  title="View ticket"
+                >
+                  <Eye size={18} />
+                </button>
               </div>
             </div>
           ))}

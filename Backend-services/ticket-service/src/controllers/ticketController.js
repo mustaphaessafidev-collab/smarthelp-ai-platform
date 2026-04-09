@@ -46,10 +46,9 @@ export const getTicketById = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const ticket = await prisma.ticket.findFirst({
+    const ticket = await prisma.ticket.findUnique({
       where: {
         id: ticketId,
-        createdBy: userId,
       },
       include: {
         messages: {
@@ -65,6 +64,16 @@ export const getTicketById = async (req, res) => {
     if (!ticket) {
       return res.status(404).json({
         message: "Ticket not found",
+      });
+    }
+
+    // Check if user is creator or assigned agent
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden - You don't have access to this ticket",
       });
     }
 
@@ -84,7 +93,7 @@ export const addMessageToTicket = async (req, res) => {
   try {
     const userId = Number(req.user?.userId);
     const ticketId = Number(req.params.id);
-    const { content } = req.body;
+    const { content, messageType } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -96,11 +105,9 @@ export const addMessageToTicket = async (req, res) => {
       });
     }
 
-    const ticket = await prisma.ticket.findFirst({
-      where: {
-        id: ticketId,
-        createdBy: userId,
-      },
+    // Check if user is creator or assigned agent
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
     });
 
     if (!ticket) {
@@ -109,14 +116,38 @@ export const addMessageToTicket = async (req, res) => {
       });
     }
 
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden",
+      });
+    }
+
+    const type = isAgent ? "AGENT" : "USER";
+
     const message = await prisma.message.create({
       data: {
         content,
         authorId: userId,
         ticketId: ticketId,
-        type: "USER",
+        type,
       },
     });
+
+    // Emit socket event
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`ticket-${ticketId}`).emit("newMessage", {
+        id: message.id,
+        content: message.content,
+        authorId: message.authorId,
+        ticketId: message.ticketId,
+        type: message.type,
+        createdAt: message.createdAt,
+      });
+    }
 
     return res.status(201).json({
       message: "Message added successfully",
