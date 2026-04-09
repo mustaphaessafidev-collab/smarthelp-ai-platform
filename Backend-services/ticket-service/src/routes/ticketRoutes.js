@@ -1,8 +1,11 @@
 import express from "express";
 import {
   addMessageToTicket,
+  assignTicket,
   createTicket,
   DeleteTicket,
+  getAllTickets,
+  getMyAssignedTickets,
   getMyTickets,
   getTicketById,
   updateTicket,
@@ -20,4 +23,10 @@ router.get("/:id", authMiddleware, getTicketById);
 router.post("/:id/messages", authMiddleware, addMessageToTicket);
 router.delete("/:id", authMiddleware, DeleteTicket);
 router.put("/:id", authMiddleware, upload.array("attachments"), updateTicket);
+
+
+// agent
+router.get("/", authMiddleware, getAllTickets);
+router.post("/:ticketId/assign", authMiddleware, assignTicket);
+router.get("/my", authMiddleware, getMyAssignedTickets);
 export default router;
