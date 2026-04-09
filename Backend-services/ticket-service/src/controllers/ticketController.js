@@ -89,6 +89,7 @@ export const getTicketById = async (req, res) => {
   }
 };
 
+
 export const addMessageToTicket = async (req, res) => {
   try {
     const userId = Number(req.user?.userId);
