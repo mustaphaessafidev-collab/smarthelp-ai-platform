@@ -9,7 +9,7 @@ function UserProfile() {
     firstName: "",
     lastName: "",
     email: "",
-    profileImage: "",
+    profileImage: null, // 👈 بدلناها
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -18,29 +18,28 @@ function UserProfile() {
     confirmPassword: "",
   });
 
-const fetchProfile = async () => {
-  try {
-    setLoading(true);
-    const res = await api.get("/users/profile");
-    console.log("profile response:", res.data);
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/users/profile");
 
-    const user = res.data.user || res.data;
+      const user = res.data.user || res.data;
 
-    setProfile(user);
+      setProfile(user);
 
-    setFormData({
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      email: user.email || "",
-      profileImage: user.profileImage || "",
-    });
-  } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || "Erreur lors du chargement du profil");
-  } finally {
-    setLoading(false);
-  }
-};
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        profileImage: null,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors du chargement du profil");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -54,6 +53,37 @@ const fetchProfile = async () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      profileImage: e.target.files[0],
+    }));
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+
+    try {
+      const data = new FormData();
+
+      data.append("firstName", formData.firstName);
+      data.append("lastName", formData.lastName);
+      data.append("email", formData.email);
+
+      if (formData.profileImage) {
+        data.append("profileImage", formData.profileImage);
+      }
+
+      const res = await api.put("/users/profile", data);
+
+      alert(res.data.message || "Profil mis à jour");
+      fetchProfile();
+    } catch (error) {
+      console.error(error);
+      alert("Erreur update profile");
+    }
+  };
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({
@@ -62,33 +92,11 @@ const fetchProfile = async () => {
     }));
   };
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await api.put("/users/profile", formData);
-      alert(res.data.message || "Profil mis à jour avec succès");
-      fetchProfile();
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Échec de la mise à jour du profil");
-    }
-  };
-
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
 
-    if (
-      !passwordData.currentPassword ||
-      !passwordData.newPassword ||
-      !passwordData.confirmPassword
-    ) {
-      alert("Veuillez remplir tous les champs du mot de passe");
-      return;
-    }
-
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Les nouveaux mots de passe ne correspondent pas");
+      alert("Passwords not matching");
       return;
     }
 
@@ -98,7 +106,7 @@ const fetchProfile = async () => {
         newPassword: passwordData.newPassword,
       });
 
-      alert(res.data.message || "Mot de passe mis à jour avec succès");
+      alert(res.data.message);
 
       setPasswordData({
         currentPassword: "",
@@ -107,163 +115,136 @@ const fetchProfile = async () => {
       });
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Échec de la mise à jour du mot de passe");
+      alert("Erreur password");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="rounded-3xl bg-white border border-slate-200 p-6 shadow-sm">
-          Chargement du profil...
-        </div>
-      </div>
-    )
-  }
-  
+  if (loading) return <div className="p-6">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-6xl space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Mon Profil</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Gérez vos informations personnelles et votre mot de passe.
-          </p>
-        </div>
 
-        {/* profile card */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-violet-100 text-2xl font-bold text-violet-700">
-              {profile?.profileImage ? (
-                <img
-                  src={profile.profileImage}
-                  alt="profile"
-                  className="h-full w-full object-cover"
+        <h1 className="text-3xl font-bold">Mon Profil</h1>
+
+        {/* PROFILE CARD */}
+        <div className="bg-white p-6 rounded-3xl shadow">
+          <div className="flex items-center gap-6">
+
+            {/* IMAGE */}
+                          <div className="relative">
+              <img
+                src={
+                  formData.profileImage
+                    ? URL.createObjectURL(formData.profileImage)
+                    : profile?.profileImage
+                      ? `http://localhost:4001${profile.profileImage}`
+                      : "https://via.placeholder.com/150"
+                }
+                className="w-24 h-24 rounded-full object-cover"
+              />
+
+              <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer">
+                ✏️
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileChange}
                 />
-              ) : (
-                <>
-                  {profile?.firstName?.[0]}
-                  {profile?.lastName?.[0]}
-                </>
-              )}
+              </label>
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-slate-900">
-                {profile?.firstName} {profile?.lastName}
+            <div>
+              <h2 className="text-xl font-bold">
+                {profile.firstName} {profile.lastName}
               </h2>
-              <p className="text-sm text-slate-600">{profile?.email}</p>
-              <div className="flex flex-wrap gap-3">
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                  {profile?.role}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                Inscrit le {profile?.createdAt
-                    ? new Date(profile.createdAt).toLocaleDateString()
-                    : "Date inconnue"}
-                </span>
-              </div>
+              <p>{profile.email}</p>
             </div>
           </div>
         </div>
 
-        {/* update profile */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-slate-900">
-              Modifier le profil
-            </h3>
+        {/* FORMS */}
+        <div className="grid grid-cols-2 gap-6">
 
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="Prénom"
-                value={formData.firstName}
-                onChange={handleProfileChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+          {/* UPDATE PROFILE */}
+          <form
+            onSubmit={handleUpdateProfile}
+            className="bg-white p-6 rounded-3xl shadow space-y-4"
+          >
+            <h3 className="font-bold text-lg">Modifier le profil</h3>
 
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Nom"
-                value={formData.lastName}
-                onChange={handleProfileChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleProfileChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="First name"
+            />
 
-              <input
-                type="email"
-                name="email"
-                placeholder="E-mail"
-                value={formData.email}
-                onChange={handleProfileChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleProfileChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Last name"
+            />
 
-              <input
-                type="text"
-                name="profileImage"
-                placeholder="URL de l'image"
-                value={formData.profileImage}
-                onChange={handleProfileChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleProfileChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Email"
+            />
 
-              <button
-                type="submit"
-                className="rounded-xl bg-violet-600 px-5 py-3 font-semibold text-white hover:bg-violet-700"
-              >
-                Enregistrer les modifications
-              </button>
-            </form>
-          </div>
+            <button className="bg-violet-600 text-white px-4 py-3 rounded-xl">
+              Save changes
+            </button>
+          </form>
 
-          {/* update password */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-slate-900">
-              Changer le mot de passe
-            </h3>
+          {/* PASSWORD */}
+          <form
+            onSubmit={handleUpdatePassword}
+            className="bg-white p-6 rounded-3xl shadow space-y-4"
+          >
+            <h3 className="font-bold text-lg">Changer mot de passe</h3>
 
-            <form onSubmit={handleUpdatePassword} className="space-y-4">
-              <input
-                type="password"
-                name="currentPassword"
-                placeholder="Mot de passe actuel"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="password"
+              name="currentPassword"
+              value={passwordData.currentPassword}
+              onChange={handlePasswordChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Current password"
+            />
 
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="Nouveau mot de passe"
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="password"
+              name="newPassword"
+              value={passwordData.newPassword}
+              onChange={handlePasswordChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="New password"
+            />
 
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirmer le nouveau mot de passe"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordChange}
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-violet-500"
-              />
+            <input
+              type="password"
+              name="confirmPassword"
+              value={passwordData.confirmPassword}
+              onChange={handlePasswordChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Confirm password"
+            />
 
-              <button
-                type="submit"
-                className="rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800"
-              >
-                Mettre à jour le mot de passe
-              </button>
-            </form>
-          </div>
+            <button className="bg-black text-white px-4 py-3 rounded-xl">
+              Update password
+            </button>
+          </form>
+
         </div>
       </div>
     </div>
