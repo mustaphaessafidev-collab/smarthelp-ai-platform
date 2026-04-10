@@ -5,6 +5,7 @@ import {
   createTicket,
   DeleteTicket,
   getAllTickets,
+  generateAIReply,
   getMyAssignedTickets,
   getMyTickets,
   getTicketById,
@@ -28,6 +29,7 @@ router.post("/:ticketId/assign", authMiddleware, assignTicket);
 router.get("/my-tickets", authMiddleware, getMyTickets);
 router.get("/:id", authMiddleware, getTicketById);
 router.post("/:id/messages", authMiddleware, addMessageToTicket);
+router.post("/:id/ai-reply", authMiddleware, generateAIReply);
 router.delete("/:id", authMiddleware, DeleteTicket);
 router.put("/:id", authMiddleware, upload.array("attachments"), updateTicket);
 

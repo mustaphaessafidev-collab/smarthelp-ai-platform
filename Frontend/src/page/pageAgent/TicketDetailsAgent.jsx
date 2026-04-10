@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import { Send, Paperclip, User, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, User, ArrowLeft, Sparkles, Loader } from "lucide-react";
 import ticketApi from "../../services/ticketApi";
 
 function TicketDetailsAgent() {
@@ -14,6 +14,7 @@ function TicketDetailsAgent() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const messagesEndRef = useRef(null);
   const token = localStorage.getItem("token");
@@ -92,6 +93,32 @@ function TicketDetailsAgent() {
       alert("Erreur lors de l'envoi du message");
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleAIHelp = async () => {
+    try {
+      setAiGenerating(true);
+
+      // Get AI reply from backend
+      const res = await ticketApi.post(`/${id}/ai-reply`);
+      const aiReply = res.data.reply;
+
+      // Send AI reply as message
+      await ticketApi.post(`/${id}/messages`, {
+        content: aiReply,
+        messageType: "AGENT",
+      });
+
+      // Message will be added by socket event, no need to manually update
+    } catch (error) {
+      console.error("Erreur lors de la génération de la réponse IA :", error);
+      alert(
+        error.response?.data?.message ||
+          "Erreur lors de la génération de la réponse IA"
+      );
+    } finally {
+      setAiGenerating(false);
     }
   };
 
@@ -195,13 +222,31 @@ function TicketDetailsAgent() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700">
                 {translateStatus(ticket.status)}
               </span>
               <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
                 {translatePriority(ticket.priority)}
               </span>
+              <button
+                onClick={handleAIHelp}
+                disabled={aiGenerating || sending}
+                className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-medium hover:from-violet-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Generate AI-assisted response"
+              >
+                {aiGenerating ? (
+                  <>
+                    <Loader size={14} className="animate-spin" />
+                    Thinking...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} />
+                    AI Help
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

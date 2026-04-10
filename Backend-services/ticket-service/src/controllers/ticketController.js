@@ -507,3 +507,57 @@ export const getMyAssignedTickets = async (req, res) => {
   }
 };
 
+export const generateAIReply = async (req, res) => {
+  try {
+    const userId = Number(req.user?.userId);
+    const ticketId = Number(req.params.id);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // Check if user is creator or assigned agent
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden - You don't have access to this ticket",
+      });
+    }
+
+    // Call AI service to generate reply
+    const aiResponse = await axios.post(
+      "http://localhost:4004/api/ai/generate-reply",
+      {
+        title: ticket.title,
+        description: ticket.description,
+        messages: ticket.messages,
+      }
+    );
+
+    return res.status(200).json({
+      reply: aiResponse.data.reply,
+    });
+  } catch (error) {
+    console.error("Generate AI reply error:", error);
+    return res.status(500).json({
+      message: "Failed to generate AI reply",
+      error: error.message,
+    });
+  }
+};
+
