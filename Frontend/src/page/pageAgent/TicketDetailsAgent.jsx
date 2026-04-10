@@ -84,7 +84,7 @@ function TicketDetailsAgent() {
         content: newMessage,
         messageType: "AGENT",
       });
-
+      
       // Message will be added by socket event
       setNewMessage("");
     } catch (error) {
@@ -167,7 +167,7 @@ function TicketDetailsAgent() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate("/agent/Tickets")}
+                onClick={() => navigate("/agent/tickets")}
                 className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 <ArrowLeft size={20} />
@@ -194,7 +194,7 @@ function TicketDetailsAgent() {
           <div className="mx-auto max-w-4xl space-y-5">
             {messages?.length > 0 ? (
               messages.map((message) => {
-                const isAgent = message.type === "AGENT";
+                const isAgent = message.messageType === "AGENT";
 
                 return (
                   <div

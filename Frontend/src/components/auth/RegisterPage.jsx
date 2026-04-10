@@ -93,7 +93,7 @@ const RegisterPage = () => {
 
       alert(message || "Connexion Google réussie");
 
-      // بدل هاد التوجيه حسب المشروع ديالك
+      
       navigate("/User");
     } catch (e) {
       console.error("Google login error:", e);

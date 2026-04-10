@@ -132,17 +132,17 @@ function UserProfile() {
           <div className="flex items-center gap-6">
 
             {/* IMAGE */}
-                          <div className="relative">
-              <img
-                src={
-                  formData.profileImage
-                    ? URL.createObjectURL(formData.profileImage)
-                    : profile?.profileImage
-                      ? `http://localhost:4001${profile.profileImage}`
-                      : "https://via.placeholder.com/150"
-                }
-                className="w-24 h-24 rounded-full object-cover"
-              />
+                      <div className="relative">
+          <img
+            src={
+              formData.profileImage
+                ? URL.createObjectURL(formData.profileImage)
+                : profile?.profileImage
+                  ? `http://localhost:4001${profile.profileImage}`
+                  : "https://via.placeholder.com/150"
+            }
+            className="w-24 h-24 rounded-full object-cover"
+          />
 
               <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer">
                 ✏️

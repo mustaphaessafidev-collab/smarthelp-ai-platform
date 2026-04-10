@@ -25,7 +25,6 @@ import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
 import TicketDetails from "../page/pageClient/ticketDetails";
-import TicketDetailsAgent from "../page/pageAgent/TicketDetailsAgent";
 import UpdateTicket from "../page/pageClient/updateTicket";
 import Categories from "../page/pageAdmin/Categories";
 function AppRoutes() {
@@ -47,7 +46,7 @@ function AppRoutes() {
           <Route path="knowledge-base" element={<KnowledgeBase />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="Profile" element={<AdminProfile />} />
+          <Route path="Profile" element={<UserProfile />} />
           <Route path="Categories" element={<Categories />} />
           
         </Route>
@@ -67,13 +66,9 @@ function AppRoutes() {
         <Route path="/Agent" element={<AgentLayout />}>
           <Route index element={<AgentDashboard />} />
           <Route path="Tickets" element={<AgentTickets />} />
-          <Route path="Profile" element={<AgentProfile />} />
+          <Route path="Profile" element={<UserProfile />} />
           <Route path="AllTickets" element={<AllTickets />} />  
-          
         </Route>
-
-        {/* Agent Ticket Details */}
-        <Route path="/agent/ticket/:id" element={<TicketDetailsAgent />} />
 
         
     </Routes>

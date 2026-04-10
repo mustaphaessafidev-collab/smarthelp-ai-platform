@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaTachometerAlt, FaUserCog, FaUsers } from "react-icons/fa";
 import { Menu } from "lucide-react";
-
+import { FaUserTag } from "react-icons/fa";
 function Sidebar() {
   const [open, setOpen] = useState(true);
 
@@ -11,7 +11,7 @@ function Sidebar() {
     { name: "Tableau de bord", path: "/admin", icon: <FaTachometerAlt /> },
     { name: "Gestion des utilisateurs", path: "/admin/users", icon: <FaUsers /> },
     { name: "Gestion des agents", path: "/admin/agent", icon: <FaUserCog /> },
-    { name: "Gestion des catégories", path: "/admin/Categories", icon: <FaUserCog /> },
+    { name: "Gestion des catégories", path: "/admin/Categories", icon: <FaUserTag /> },
     { name: "Profil", path: "/admin/Profile", icon: <CgProfile /> },
   ];
 
