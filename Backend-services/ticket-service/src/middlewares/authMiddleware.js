@@ -17,9 +17,17 @@ export const authMiddleware = (req, res, next) => {
       });
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    
+    // Map userId from token to id in req.user
+    req.user = {
+      id: decoded.userId,
+      userId: decoded.userId,
+      ...decoded
+    };
+    
     next();
   } catch (error) {
+    console.error("authMiddleware error:", error);
     return res.status(401).json({
       message: "Token invalide ou expire",
     });

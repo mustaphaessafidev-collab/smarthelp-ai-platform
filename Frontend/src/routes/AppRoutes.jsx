@@ -14,6 +14,7 @@ import VerifyCodePage from "../components/auth/verify-code";
 import Page404 from "../page/page404";
 
 import AgentManagement from "../page/pageAdmin/AgentManagement";
+import TicketStatsDashboard from "../page/pageAdmin/TicketStatsDashboard";
 import UserDashboard from "../page/pageClient/Dashboard";
 import MyTickets from "../page/pageClient/MyTickets";
 import CreateTicket from "../page/pageClient/CreateTicket";
@@ -49,7 +50,7 @@ function AppRoutes() {
           <Route path="settings" element={<Settings />} />
           <Route path="Profile" element={<UserProfile />} />
           <Route path="Categories" element={<Categories />} />
-          
+          <Route path="tickets-stats" element={<TicketStatsDashboard />} />
         </Route>
 
         {/* User Router     */}
