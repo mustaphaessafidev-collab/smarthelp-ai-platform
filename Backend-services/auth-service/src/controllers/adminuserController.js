@@ -19,6 +19,7 @@ export const  getUsersOnly=async (req,res)=>{
                 role: true,
                 isVerified: true,
                 createdAt: true,
+                profileImage: true,
             }
         });
 
@@ -35,6 +36,42 @@ export const  getUsersOnly=async (req,res)=>{
     })
     }
 }  
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    
+    const user = await prisma.user.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    
+    await prisma.user.delete({
+      where: { id: Number(id) },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("deleteUser error:", error);
+
+    res.status(500).json({
+      message: "Error deleting user",
+      error: error.message,
+    });
+  }
+};
+
 
 
 
@@ -58,6 +95,7 @@ export const  getAgentOnly=async (req,res)=>{
                 role: true,
                 isVerified: true,
                 createdAt: true,
+                profileImage: true,
             }
         });
 

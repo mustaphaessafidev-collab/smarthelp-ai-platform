@@ -30,12 +30,12 @@ const LoginPage = () => {
             alert("Veuillez saisir votre e-mail et votre mot de passe.");
             return;
             }
-            console.log("test")
+            
             // send data to backend
             const {remember,...usedate}=data
             const res= await api.post("/auth/login",usedate)
         // Save data to localStorage
-            localStorage.setItem("token", res.data.token);;
+            localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
             const role =res.data.user.role
         // Show alert on success
@@ -48,10 +48,10 @@ const LoginPage = () => {
             }else{
                 navigate("/page404")
             }
-            alert("Connexion réussie !");
             
-        // Console log the data
-            console.log("Logged in data:", data);
+            
+        
+            
         }catch(e){
             console.error(e);
             alert(e.response?.data?.message || "Échec de la connexion");

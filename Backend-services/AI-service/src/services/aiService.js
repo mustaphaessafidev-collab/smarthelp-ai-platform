@@ -67,3 +67,53 @@ ${description}
 
   return JSON.parse(content);
 };
+
+export const generateAgentReply = async ({ title, description, messages = [] }) => {
+  const conversationHistory = messages
+    .map((msg) => `${msg.type === "USER" ? "Client" : "Agent"}: ${msg.content}`)
+    .join("\n");
+
+  const prompt = `
+Tu es un agent support professionnel et empathique pour un helpdesk.
+
+Contexte du ticket:
+Titre: ${title}
+Description: ${description}
+
+Historique de conversation:
+${conversationHistory || "Aucun message pour le moment"}
+
+Ta tâche:
+Génère une réponse professionnelle et utile pour continuer la conversation avec le client.
+- Sois courtois et empathique
+- Propose une solution ou des étapes de dépannage
+- Sois concis et clair
+- Si le problème semble résolu, propose de conclure le ticket
+
+Réponds directement sans explications supplémentaires, uniquement le message.
+`;
+
+  const completion = await groq.chat.completions.create({
+    model: "openai/gpt-oss-20b",
+    messages: [
+      {
+        role: "system",
+        content:
+          "Tu es un agent support professionnel. Réponds uniquement par le message à envoyer au client.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    temperature: 0.7,
+  });
+
+  const reply = completion.choices?.[0]?.message?.content?.trim();
+
+  if (!reply) {
+    throw new Error("No AI reply generated");
+  }
+
+  return { reply };
+};

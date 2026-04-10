@@ -331,10 +331,15 @@ const handleSubmit = async (e) => {
                     <tr key={agent.id} className="transition hover:bg-slate-50/70">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
-                            {agent.firstName?.[0]}
-                            {agent.lastName?.[0]}
-                          </div>
+                          <img
+                            src={
+                              agent.profileImage
+                                ? `http://localhost:4001${agent.profileImage}`
+                                : "https://i.pinimg.com/736x/a9/5e/7a/a95e7a415633a614613e757bac4246ed.jpg"
+                            }
+                            alt="profile"
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
                           <div>
                             <p className="text-sm font-semibold text-slate-800">
                               {agent.firstName} {agent.lastName}

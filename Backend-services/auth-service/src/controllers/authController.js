@@ -72,6 +72,14 @@ export const verifyCode = async (req, res) => {
     if (new Date() > new Date(user.codeExpiresAt)) {
       return res.status(400).json({ message: "Code expire" });
     }
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
 
     await prisma.user.update({
       where: { email },
@@ -82,7 +90,11 @@ export const verifyCode = async (req, res) => {
       },
     });
 
-    return res.json({ message: "compte verifie" });
+    return res.json({
+       message: "compte verifie" ,
+       token,
+       user
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server erreur" });

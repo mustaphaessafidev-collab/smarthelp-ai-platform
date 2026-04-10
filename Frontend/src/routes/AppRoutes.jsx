@@ -14,6 +14,7 @@ import VerifyCodePage from "../components/auth/verify-code";
 import Page404 from "../page/page404";
 
 import AgentManagement from "../page/pageAdmin/AgentManagement";
+import TicketStatsDashboard from "../page/pageAdmin/TicketStatsDashboard";
 import UserDashboard from "../page/pageClient/Dashboard";
 import MyTickets from "../page/pageClient/MyTickets";
 import CreateTicket from "../page/pageClient/CreateTicket";
@@ -24,8 +25,8 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
-import TicketDetails from "../page/pageClient/ticketDetails";
 import TicketDetailsAgent from "../page/pageAgent/TicketDetailsAgent";
+import TicketDetails from "../page/pageClient/ticketDetails";
 import UpdateTicket from "../page/pageClient/updateTicket";
 import Categories from "../page/pageAdmin/Categories";
 function AppRoutes() {
@@ -47,9 +48,9 @@ function AppRoutes() {
           <Route path="knowledge-base" element={<KnowledgeBase />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="Profile" element={<AdminProfile />} />
+          <Route path="Profile" element={<UserProfile />} />
           <Route path="Categories" element={<Categories />} />
-          
+          <Route path="tickets-stats" element={<TicketStatsDashboard />} />
         </Route>
 
         {/* User Router     */}
@@ -67,12 +68,11 @@ function AppRoutes() {
         <Route path="/Agent" element={<AgentLayout />}>
           <Route index element={<AgentDashboard />} />
           <Route path="Tickets" element={<AgentTickets />} />
-          <Route path="Profile" element={<AgentProfile />} />
+          <Route path="Profile" element={<UserProfile />} />
           <Route path="AllTickets" element={<AllTickets />} />  
-          
         </Route>
 
-        {/* Agent Ticket Details */}
+        {/* Agent Ticket Details (outside layout for full screen) */}
         <Route path="/agent/ticket/:id" element={<TicketDetailsAgent />} />
 
         

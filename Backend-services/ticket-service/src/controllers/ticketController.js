@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const getMyTickets = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
 
     if (!userId) {
       return res.status(401).json({
@@ -39,7 +39,7 @@ export const getMyTickets = async (req, res) => {
 
 export const getTicketById = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
     const ticketId = Number(req.params.id);
 
     if (!userId) {
@@ -92,7 +92,7 @@ export const getTicketById = async (req, res) => {
 
 export const addMessageToTicket = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
     const ticketId = Number(req.params.id);
     const { content, messageType } = req.body;
 
@@ -167,7 +167,7 @@ export const addMessageToTicket = async (req, res) => {
 export const createTicket = async (req, res) => {
   try {
     const { title, description, priority, categoryId } = req.body;
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
     const files = req.files || [];
 
     if (!userId) {
@@ -219,7 +219,7 @@ export const createTicket = async (req, res) => {
           attachments: {
             create: files.map((file) => ({
               fileName: file.originalname,
-              fileUrl: file.path,
+              fileUrl: `/${file.path.replace(/\\/g, "/")}`,
               fileType: file.mimetype,
               fileSize: file.size,
             })),
@@ -292,7 +292,7 @@ export const createTicket = async (req, res) => {
 
 export const DeleteTicket = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
     const ticketId = Number(req.params.id);
 
     if (!userId) {
@@ -336,7 +336,7 @@ export const DeleteTicket = async (req, res) => {
 };
 export const updateTicket = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
     const ticketId = Number(req.params.id);
 
     const { title, description, priority, categoryId, removeAttachments } = req.body;
@@ -389,7 +389,7 @@ export const updateTicket = async (req, res) => {
           attachments: {
             create: files.map((file) => ({
               fileName: file.originalname,
-              fileUrl: file.path,
+              fileUrl: `/${file.path.replace(/\\/g, "/")}`,
               fileType: file.mimetype,
               fileSize: file.size,
             })),
@@ -419,7 +419,7 @@ export const updateTicket = async (req, res) => {
 //agent controllers
 export const getAllTickets = async (req, res) => {
   try {
-    const userId = Number(req.user?.userId);
+    const userId = Number(req.user?.id);
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -442,7 +442,7 @@ export const getAllTickets = async (req, res) => {
 export const assignTicket = async (req, res) => {
   try {
     const ticketId = Number(req.params.ticketId);
-    const agentId = Number(req.user?.userId);
+    const agentId = Number(req.user?.id);
 
     if (!agentId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -482,7 +482,7 @@ export const assignTicket = async (req, res) => {
 
 export const getMyAssignedTickets = async (req, res) => {
   try {
-    const agentId = Number(req.user?.userId);
+    const agentId = Number(req.user?.id);
 
     if (!agentId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -507,3 +507,139 @@ export const getMyAssignedTickets = async (req, res) => {
   }
 };
 
+export const generateAIReply = async (req, res) => {
+  try {
+    const userId = Number(req.user?.id);
+    const ticketId = Number(req.params.id);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // Check if user is creator or assigned agent
+    const isCreator = ticket.createdBy === userId;
+    const isAgent = ticket.assignedTo === userId;
+
+    if (!isCreator && !isAgent) {
+      return res.status(403).json({
+        message: "Forbidden - You don't have access to this ticket",
+      });
+    }
+
+    // Call AI service to generate reply
+    const aiResponse = await axios.post(
+      "http://localhost:4004/api/ai/generate-reply",
+      {
+        title: ticket.title,
+        description: ticket.description,
+        messages: ticket.messages,
+      }
+    );
+
+    return res.status(200).json({
+      reply: aiResponse.data.reply,
+    });
+  } catch (error) {
+    console.error("Generate AI reply error:", error);
+    return res.status(500).json({
+      message: "Failed to generate AI reply",
+      error: error.message,
+    });
+  }
+};
+
+export const closeTicket = async (req, res) => {
+  try {
+    const userId = Number(req.user?.id || req.user?.userId);
+    const ticketId = Number(req.params.id);
+
+    console.log(`[closeTicket] Attempting to close ticket ${ticketId} by user ${userId}`);
+
+    // ✅ Validate user
+    if (!userId || isNaN(userId)) {
+      return res.status(401).json({
+        message: "Unauthorized - Invalid user ID",
+      });
+    }
+
+    // ✅ Validate ticket ID
+    if (!ticketId || isNaN(ticketId)) {
+      return res.status(400).json({
+        message: "Invalid ticket ID",
+      });
+    }
+
+    // ✅ Fetch ticket
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+    });
+
+    // ✅ Debug هنا مزيان
+    console.log("ticket.assignedTo:", ticket?.assignedTo);
+    console.log("userId:", userId);
+
+    // ✅ Check exists
+    if (!ticket) {
+      return res.status(404).json({
+        message: "Ticket not found",
+      });
+    }
+
+    // ✅ Check agent
+    if (ticket.assignedTo !== userId) {
+      return res.status(403).json({
+        message: "Only assigned agent can close this ticket",
+      });
+    }
+
+    // ✅ Check already closed
+    if (ticket.status === "RESOLVED" || ticket.status === "CLOSED") {
+      return res.status(400).json({
+        message: "Ticket already closed",
+      });
+    }
+
+    // ✅ Update
+    const closedTicket = await prisma.ticket.update({
+      where: { id: ticketId },
+      data: {
+        status: "RESOLVED",
+        closedAt: new Date(),
+      },
+    });
+
+    // ✅ Socket
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`ticket-${ticketId}`).emit("ticketClosed", {
+        ticketId,
+        status: "RESOLVED",
+        closedAt: closedTicket.closedAt,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Ticket closed successfully",
+      ticket: closedTicket,
+    });
+
+  } catch (error) {
+    console.error("[closeTicket] Error:", error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
