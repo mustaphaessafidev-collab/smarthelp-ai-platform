@@ -24,6 +24,7 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
+import TicketDetailsAgent from "../page/pageAgent/TicketDetailsAgent";
 import TicketDetails from "../page/pageClient/ticketDetails";
 import UpdateTicket from "../page/pageClient/updateTicket";
 import Categories from "../page/pageAdmin/Categories";
@@ -69,6 +70,9 @@ function AppRoutes() {
           <Route path="Profile" element={<UserProfile />} />
           <Route path="AllTickets" element={<AllTickets />} />  
         </Route>
+
+        {/* Agent Ticket Details (outside layout for full screen) */}
+        <Route path="/agent/ticket/:id" element={<TicketDetailsAgent />} />
 
         
     </Routes>

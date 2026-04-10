@@ -167,7 +167,7 @@ function TicketDetailsAgent() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate("/agent/tickets")}
+                onClick={() => navigate("/Agent/Tickets")}
                 className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
               >
                 <ArrowLeft size={20} />
@@ -175,6 +175,23 @@ function TicketDetailsAgent() {
               <div>
                 <h1 className="text-lg font-bold text-slate-900">{ticket.title}</h1>
                 <p className="mt-1 text-sm text-slate-500">{ticket.description}</p>
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {ticket.attachments.map((attachment) => (
+                      <a
+                        key={attachment.id}
+                        href={`http://localhost:4002${attachment.fileUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100"
+                        title={attachment.fileName}
+                      >
+                        📎 {attachment.fileName.substring(0, 20)}
+                        {attachment.fileName.length > 20 ? "..." : ""}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -194,7 +211,7 @@ function TicketDetailsAgent() {
           <div className="mx-auto max-w-4xl space-y-5">
             {messages?.length > 0 ? (
               messages.map((message) => {
-                const isAgent = message.messageType === "AGENT";
+                const isAgent = message.type === "AGENT";
 
                 return (
                   <div
@@ -223,6 +240,37 @@ function TicketDetailsAgent() {
                       >
                         {message.content}
                       </div>
+
+                      {message.attachments && message.attachments.length > 0 && (
+                        <div className="mt-2 flex flex-col gap-2">
+                          {message.attachments.map((attachment) => {
+                            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(
+                              attachment.fileName
+                            );
+                            return isImage ? (
+                              <img
+                                key={attachment.id}
+                                src={`http://localhost:4002${attachment.fileUrl}`}
+                                alt={attachment.fileName}
+                                className="max-w-xs rounded-lg shadow-md"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <a
+                                key={attachment.id}
+                                href={`http://localhost:4002${attachment.fileUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100"
+                              >
+                                📎 {attachment.fileName}
+                              </a>
+                            );
+                          })}
+                        </div>
+                      )}
 
                       <span className="mt-1 px-1 text-[11px] text-slate-400">
                         {formatTime(message.createdAt)}

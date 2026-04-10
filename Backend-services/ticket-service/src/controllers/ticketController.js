@@ -219,7 +219,7 @@ export const createTicket = async (req, res) => {
           attachments: {
             create: files.map((file) => ({
               fileName: file.originalname,
-              fileUrl: file.path,
+              fileUrl: `/${file.path.replace(/\\/g, "/")}`,
               fileType: file.mimetype,
               fileSize: file.size,
             })),
@@ -389,7 +389,7 @@ export const updateTicket = async (req, res) => {
           attachments: {
             create: files.map((file) => ({
               fileName: file.originalname,
-              fileUrl: file.path,
+              fileUrl: `/${file.path.replace(/\\/g, "/")}`,
               fileType: file.mimetype,
               fileSize: file.size,
             })),
