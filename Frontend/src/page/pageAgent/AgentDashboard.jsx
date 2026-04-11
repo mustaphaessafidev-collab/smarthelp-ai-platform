@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { TrendingUp, CheckCircle2, AlertCircle, Clock, Zap } from "lucide-react";
 import axios from "axios";
+import {
+  Ticket,
+  CircleCheckBig,
+  CircleAlert,
+  CalendarDays,
+  BarChart3,
+  AlertCircle,
+} from "lucide-react";
 
 function AgentDashboard() {
   const [stats, setStats] = useState(null);
@@ -13,6 +20,7 @@ function AgentDashboard() {
     const fetchStats = async () => {
       try {
         setLoading(true);
+
         const response = await axios.get(
           "http://localhost:4002/api/tickets/agent/stats",
           {
@@ -21,13 +29,14 @@ function AgentDashboard() {
             },
           }
         );
-        console.log("Agent stats:", response.data);
+
         setStats(response.data.stats);
         setError(null);
       } catch (err) {
-        console.error("Error fetching agent stats:", err);
+        console.error("Erreur lors du chargement des statistiques agent :", err);
         setError(
-          err.response?.data?.message || "Failed to fetch your statistics"
+          err.response?.data?.message ||
+            "Impossible de récupérer vos statistiques"
         );
       } finally {
         setLoading(false);
@@ -36,34 +45,33 @@ function AgentDashboard() {
 
     if (token) {
       fetchStats();
+    } else {
+      setLoading(false);
+      setError("Utilisateur non authentifié");
     }
   }, [token]);
 
-  const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
-    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-slate-600 font-medium">{title}</p>
-          <h3 className="text-3xl font-bold text-slate-900 mt-2">{value}</h3>
-          {subtext && (
-            <p className="text-xs text-slate-500 mt-2">{subtext}</p>
-          )}
-        </div>
-        <div className={`rounded-lg p-3 ${color}`}>
-          <Icon size={24} className="text-white" />
-        </div>
-      </div>
+  const StatCard = ({ title, value, subtitle, icon: Icon, iconBg, iconColor }) => (
+  <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
+    
+    <div>
+      <p className="text-sm font-medium text-slate-500">{title}</p>
+      <h3 className="mt-2 text-2xl font-bold text-slate-900">{value}</h3>
+      {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
     </div>
-  );
+
+    <div className={`p-3 rounded-2xl ${iconBg}`}>
+      <Icon className={`${iconColor}`} size={22} />
+    </div>
+  </div>
+);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 mb-4">
-            <div className="animate-spin h-8 w-8 border-2 border-violet-600 border-t-transparent rounded-full"></div>
-          </div>
-          <p className="text-slate-600">Loading your dashboard...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-10 text-center shadow-sm">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-violet-600 border-t-transparent"></div>
+          <p className="text-sm text-slate-600">Chargement...</p>
         </div>
       </div>
     );
@@ -71,146 +79,204 @@ function AgentDashboard() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center">
-          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-orange-500" />
-          <p className="text-slate-600">{error}</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-red-200 bg-white px-8 py-10 text-center shadow-sm">
+          <p className="text-base font-semibold text-slate-900">
+            Une erreur est survenue
+          </p>
+          <p className="mt-2 text-sm text-slate-500">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#f6f7fb] min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-slate-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-8">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold text-slate-900">
-            Welcome, Agent! 👋
+            Tableau de bord agent
           </h1>
-          <p className="text-slate-600 mt-2">
-            Here's your performance overview
+          <p className="mt-2 text-sm text-slate-500">
+            Aperçu simple de votre activité
           </p>
         </div>
 
-        {/* Stats Grid */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <StatCard
-              title="My Tickets"
-              value={stats.myTickets}
-              icon={TrendingUp}
-              color="bg-blue-500"
-              subtext="Total assigned tickets"
-            />
-            <StatCard
-              title="Resolved"
-              value={stats.resolvedTickets}
-              icon={CheckCircle2}
-              color="bg-green-500"
-              subtext={`${stats.resolutionRate}% resolution rate`}
-            />
-            <StatCard
-              title="Open Tickets"
-              value={stats.openTickets}
-              icon={AlertCircle}
-              color="bg-orange-500"
-              subtext="Need your attention"
-            />
-            <StatCard
-              title="Today"
-              value={stats.resolvedToday}
-              icon={Zap}
-              color="bg-violet-500"
-              subtext="Resolved today"
-            />
-            <StatCard
-              title="This Month"
-              value={stats.resolvedThisMonth}
-              icon={Clock}
-              color="bg-indigo-500"
-              subtext="Resolved this month"
-            />
-          </div>
-        )}
+          <>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+  <StatCard
+    title="Mes tickets"
+    value={stats.myTickets ?? 0}
+    subtitle="Tickets qui vous sont attribués"
+    icon={Ticket}
+    iconBg="bg-blue-100"
+    iconColor="text-blue-600"
+  />
 
-        {/* Insights */}
-        {stats && (
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">
-              📊 Your Performance
-            </h2>
+  <StatCard
+    title="Tickets ouverts"
+    value={stats.openTickets ?? 0}
+    subtitle="Demandes en cours de traitement"
+    icon={CircleAlert}
+    iconBg="bg-orange-100"
+    iconColor="text-orange-600"
+  />
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                <span className="text-slate-700 font-medium">
-                  Resolution Rate
-                </span>
-                <span className="text-2xl font-bold text-green-600">
-                  {stats.resolutionRate}%
-                </span>
+  <StatCard
+    title="Résolus aujourd’hui"
+    value={stats.resolvedToday ?? 0}
+    subtitle="Tickets résolus aujourd’hui"
+    icon={CalendarDays}
+    iconBg="bg-violet-100"
+    iconColor="text-violet-600"
+  />
+
+  <StatCard
+    title="Taux de résolution"
+    value={`${stats.resolutionRate ?? 0}%`}
+    subtitle="Performance globale"
+    icon={BarChart3}
+    iconBg="bg-green-100"
+    iconColor="text-green-600"
+  />
+</div>
+
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-900">
+                  Résumé rapide
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Les informations essentielles de votre activité
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl bg-blue-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      Vous avez{" "}
+                      <span className="font-semibold text-blue-700">
+                        {stats.myTickets ?? 0}
+                      </span>{" "}
+                      ticket(s) assigné(s).
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-orange-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      Il reste{" "}
+                      <span className="font-semibold text-orange-700">
+                        {stats.openTickets ?? 0}
+                      </span>{" "}
+                      ticket(s) ouvert(s).
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-green-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      Votre taux de résolution est de{" "}
+                      <span className="font-semibold text-green-700">
+                        {stats.resolutionRate ?? 0}%
+                      </span>
+                      .
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {stats.openTickets > 0 && (
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200">
-                  <span className="text-slate-700 font-medium">
-                    Tickets Awaiting Your Response
-                  </span>
-                  <span className="text-2xl font-bold text-orange-600">
-                    {stats.openTickets}
-                  </span>
-                </div>
-              )}
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-900">
+                  Activité du jour
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Vue simple de votre progression aujourd’hui
+                </p>
 
-              {stats.resolvedToday === 0 && stats.openTickets > 0 && (
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-                  <span className="text-slate-700 font-medium">
-                    Action Required
-                  </span>
-                  <span className="text-sm text-blue-600">
-                    Start resolving tickets to boost your stats today
-                  </span>
-                </div>
-              )}
+                <div className="mt-6 space-y-5">
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-600">
+                        Tickets résolus aujourd’hui
+                      </span>
+                      <span className="text-sm font-semibold text-violet-600">
+                        {stats.resolvedToday ?? 0}
+                      </span>
+                    </div>
 
-              {stats.resolvedToday > 0 && (
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200">
-                  <span className="text-slate-700 font-medium">
-                    Great Job! 🎉
-                  </span>
-                  <span className="text-sm text-violet-600">
-                    You resolved {stats.resolvedToday} ticket
-                    {stats.resolvedToday !== 1 ? "s" : ""} today
-                  </span>
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-violet-100">
+                      <div
+                        className="h-3 rounded-full bg-violet-500 transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            ((stats.resolvedToday ?? 0) / Math.max(stats.myTickets ?? 1, 1)) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-600">
+                        Tickets ouverts
+                      </span>
+                      <span className="text-sm font-semibold text-orange-600">
+                        {stats.openTickets ?? 0}
+                      </span>
+                    </div>
+
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-orange-100">
+                      <div
+                        className="h-3 rounded-full bg-orange-500 transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            ((stats.openTickets ?? 0) / Math.max(stats.myTickets ?? 1, 1)) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-sm text-slate-600">
+                      {stats.resolvedToday > 0
+                        ? `Bon travail, vous avez déjà résolu ${stats.resolvedToday} ticket(s) aujourd’hui.`
+                        : "Aucun ticket résolu pour le moment aujourd’hui."}
+                    </p>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a
-            href="/Agent/Tickets"
-            className="block p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-shadow text-center"
-          >
-            <h3 className="text-lg font-bold text-slate-900">View My Tickets</h3>
-            <p className="text-sm text-slate-500 mt-2">
-              See all your assigned tickets
-            </p>
-          </a>
-          <a
-            href="/Agent/AllTickets"
-            className="block p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition-shadow text-center"
-          >
-            <h3 className="text-lg font-bold text-slate-900">
-              Browse All Tickets
-            </h3>
-            <p className="text-sm text-slate-500 mt-2">
-              Find tickets to work on
-            </p>
-          </a>
-        </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <a
+                href="/Agent/Tickets"
+                className="block rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:shadow-md"
+              >
+                <h3 className="text-lg font-bold text-slate-900">
+                  Voir mes tickets
+                </h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  Consulter les tickets qui vous sont attribués
+                </p>
+              </a>
+
+              <a
+                href="/Agent/AllTickets"
+                className="block rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:shadow-md"
+              >
+                <h3 className="text-lg font-bold text-slate-900">
+                  Parcourir tous les tickets
+                </h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  Explorer les autres tickets disponibles
+                </p>
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

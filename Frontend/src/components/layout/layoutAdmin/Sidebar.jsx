@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { LayoutDashboard, Menu } from "lucide-react";
 import {
   FiHome,
  
@@ -16,7 +16,7 @@ function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const menu = [
-    { name: "Dashboard", path: "/Admin", icon: <FiHome /> },
+    { name: "Dashboard", path: "/Admin", icon: <LayoutDashboard /> },
     { name: "Tickets", path: "/Admin/tickets-stats", icon: <LuTicketSlash /> },
     { name: "Users", path: "/Admin/users", icon: <FiUsers /> },
     { name: "Agents", path: "/Admin/agent", icon: <FiUserCheck /> },
