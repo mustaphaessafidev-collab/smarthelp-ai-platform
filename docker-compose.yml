@@ -1,0 +1,103 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: helpdesk-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: helpdesk_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api-gateway:
+    build: ./Backend-services/api-gateway
+    container_name: api-gateway
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      AUTH_SERVICE_URL: http://auth-service:4001
+      TICKET_SERVICE_URL: http://ticket-service:4002
+      ADMIN_SERVICE_URL: http://admin-service:4003
+      AI_SERVICE_URL: http://ai-service:4004
+    depends_on:
+      - auth-service
+      - ticket-service
+      - admin-service
+      - ai-service
+
+  auth-service:
+    build: ./Backend-services/auth-service
+    container_name: auth-service
+    restart: always
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/helpdesk_db
+      JWT_SECRET: your_jwt_secret
+    depends_on:
+      - postgres
+
+  ticket-service:
+    build: ./Backend-services/ticket-service
+    container_name: ticket-service
+    restart: always
+    ports:
+      - "4002:4002"
+    environment:
+      PORT: 4002
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/helpdesk_db
+      JWT_SECRET: your_jwt_secret
+      ADMIN_SERVICE_URL: http://admin-service:4003
+      AI_SERVICE_URL: http://ai-service:4004
+      API_GATEWAY_URL: http://api-gateway:4000
+    depends_on:
+      - postgres
+      - admin-service
+      - ai-service
+
+  admin-service:
+    build: ./Backend-services/admin-service
+    container_name: admin-service
+    restart: always
+    ports:
+      - "4003:4003"
+    environment:
+      PORT: 4003
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/helpdesk_db
+      JWT_SECRET: your_jwt_secret
+    depends_on:
+      - postgres
+
+  ai-service:
+    build: ./Backend-services/AI-service
+    container_name: ai-service
+    restart: always
+    ports:
+      - "4004:4004"
+    environment:
+      PORT: 4004
+      GROQ_API_KEY: your_groq_api_key
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./Frontend
+    container_name: frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on:
+      - api-gateway
+
+volumes:
+  postgres_data:
