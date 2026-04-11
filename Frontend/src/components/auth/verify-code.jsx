@@ -56,6 +56,8 @@ const VerifyCodePage = () => {
       alert(res.data.message || "E-mail vérifié avec succès");
 
       localStorage.removeItem("verifyEmail");
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate("/User");
     } catch (e) {
       console.error(e);

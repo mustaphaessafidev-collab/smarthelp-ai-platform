@@ -10,11 +10,12 @@ import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import HomePage from "../components/home/HomePage";
 import VerifyCodePage from "../components/auth/verify-code";
-import Categories from "../page/pageAdmin/Categories";
+// import Categories from "../page/pageAdmin/Categories";
 
 import Page404 from "../page/page404";
 
 import AgentManagement from "../page/pageAdmin/AgentManagement";
+import TicketStatsDashboard from "../page/pageAdmin/TicketStatsDashboard";
 import UserDashboard from "../page/pageClient/Dashboard";
 import MyTickets from "../page/pageClient/MyTickets";
 import CreateTicket from "../page/pageClient/CreateTicket";
@@ -25,57 +26,55 @@ import AgentDashboard from "../page/pageAgent/AgentDashboard";
 import AgentTickets from "../page/pageAgent/AgentTickets";
 import AgentProfile from "../page/pageAgent/AgentProfile";
 import AllTickets from "../page/pageAgent/AllTickets";
+import TicketDetailsAgent from "../page/pageAgent/TicketDetailsAgent";
 import TicketDetails from "../page/pageClient/ticketDetails";
 import UpdateTicket from "../page/pageClient/updateTicket";
-
+import Categories from "../page/pageAdmin/Categories";
+import ForgotPasswordPage from "../components/auth/ForgotPasswordPage";
+import ResetPasswordPage from "../components/auth/ResetPasswordPage";
 function AppRoutes() {
   return (
     <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify-code" element={<VerifyCodePage />} />
-        
-        <Route path="/" element={<HomePage />} />
-        
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/verify-code" element={<VerifyCodePage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/" element={<HomePage />} />
 
+      {/* Admin Router     */}
+      <Route path="/Admin" element={<AdminLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="agent" element={<AgentManagement />} />
+        <Route path="knowledge-base" element={<KnowledgeBase />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="Profile" element={<UserProfile />} />
+        <Route path="Categories" element={<Categories />} />
+        <Route path="tickets-stats" element={<TicketStatsDashboard />} />
+      </Route>
 
+      {/* User Router     */}
+      <Route path="/User" element={<UserLayout />}>
+        <Route index element={<UserDashboard />} />
+        <Route path="MyTickets" element={<MyTickets />} />
+        <Route path="CreateTicket" element={<CreateTicket />} />
+        <Route path="TicketDetails/:id" element={<TicketDetails />} />
+        <Route path="UpdateTicket/:id" element={<UpdateTicket />} />
+        <Route path="Profile" element={<UserProfile />} />
+      </Route>
+      {/* Agent Router     */}
+      <Route path="/Agent" element={<AgentLayout />}>
+        <Route index element={<AgentDashboard />} />
+        <Route path="Tickets" element={<AgentTickets />} />
+        <Route path="Profile" element={<UserProfile />} />
+        <Route path="AllTickets" element={<AllTickets />} />
+      </Route>
 
-        {/* Admin Router     */}
-        <Route path="/Admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="users" element={<UserManagement />} />
-          <Route path="agent" element={<AgentManagement />} />
-          <Route path="knowledge-base" element={<KnowledgeBase />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="Profile" element={<AdminProfile />} />
-          <Route path="Categories" element={<Categories />} />
-          {/* <Route path="*" element={<ErrorPage />} /> */}
-        </Route>
-
-        {/* User Router     */}
-        <Route path="/User" element={<UserLayout />}>
-          <Route index element={<UserDashboard />} />
-          <Route path="MyTickets" element={<MyTickets />} />
-          <Route path="CreateTicket" element={<CreateTicket />} />
-          <Route path="TicketDetails/:id" element={<TicketDetails/>}/>
-          <Route path="UpdateTicket/:id" element={<UpdateTicket />} />
-          <Route path="Profile" element={<UserProfile />} />
-          {/* <Route path="/" element={<ErrorPage />} /> */}
-          
-        </Route>
-        {/* Agent Router     */}
-        <Route path="/Agent" element={<AgentLayout />}>
-          <Route index element={<AgentDashboard />} />
-          <Route path="Tickets" element={<AgentTickets />} />
-          <Route path="Profile" element={<AgentProfile />} />
-          <Route path="AllTickets" element={<AllTickets />} />  
-          {/* <Route path="*" element={<ErrorPage />} />         */}
-        </Route>
-
-        
+      {/* Agent Ticket Details (outside layout for full screen) */}
+      <Route path="/agent/ticket/:id" element={<TicketDetailsAgent />} />
     </Routes>
-    
   );
 }
 

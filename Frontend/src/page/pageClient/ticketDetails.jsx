@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 import { Send, Paperclip, User } from "lucide-react";
+import ticketApi from "../../services/ticketApi";
 
 function TicketDetails() {
   const { id } = useParams();
+  const socketRef = useRef(null);
 
   const [ticket, setTicket] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -14,15 +17,13 @@ function TicketDetails() {
   const messagesEndRef = useRef(null);
   const token = localStorage.getItem("token");
 
+  // Fetch ticket and messages
   const fetchTicket = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/tickets/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await ticketApi.get(`/${id}`);
 
       setTicket(res.data.ticket);
+      setMessages(res.data.ticket.messages || []);
     } catch (error) {
       console.error("Erreur lors de la récupération du ticket :", error);
     } finally {
@@ -30,13 +31,47 @@ function TicketDetails() {
     }
   };
 
+  // Initialize Socket.io
+  useEffect(() => {
+    socketRef.current = io("http://localhost:4002", {
+      auth: {
+        token,
+      },
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
+      // Join ticket room
+      socketRef.current.emit("joinTicket", Number(id));
+    });
+
+    // Listen for new messages
+    socketRef.current.on("newMessage", (message) => {
+      console.log("New message received:", message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.emit("leaveTicket", Number(id));
+        socketRef.current.disconnect();
+      }
+    };
+  }, [id, token]);
+
+  // Fetch ticket on load
   useEffect(() => {
     fetchTicket();
   }, [id]);
 
+  // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [ticket?.messages]);
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -44,20 +79,16 @@ function TicketDetails() {
     try {
       setSending(true);
 
-      await axios.post(
-        `http://localhost:4000/api/tickets/${id}/messages`,
-        { content: newMessage },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await ticketApi.post(`/${id}/messages`, {
+        content: newMessage,
+        messageType: "USER",
+      });
 
+      // Message will be added by socket event
       setNewMessage("");
-      fetchTicket();
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
+      alert("Erreur lors de l'envoi du message");
     } finally {
       setSending(false);
     }
@@ -136,6 +167,23 @@ function TicketDetails() {
             <div>
               <h1 className="text-lg font-bold text-slate-900">{ticket.title}</h1>
               <p className="mt-1 text-sm text-slate-500">{ticket.description}</p>
+              {ticket.attachments && ticket.attachments.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {ticket.attachments.map((attachment) => (
+                    <a
+                      key={attachment.id}
+                      href={`http://localhost:4002${attachment.fileUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100"
+                      title={attachment.fileName}
+                    >
+                      📎 {attachment.fileName.substring(0, 20)}
+                      {attachment.fileName.length > 20 ? "..." : ""}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -152,58 +200,88 @@ function TicketDetails() {
         {/* Conversation */}
         <div className="flex-1 overflow-y-auto bg-[#f7f8fc] px-4 py-5 md:px-6">
           <div className="mx-auto max-w-4xl space-y-5">
-            
-       {ticket.messages?.length > 0 ? (
-  ticket.messages.map((message) => {
-    const isUser = message.type === "USER";
+            {messages?.length > 0 ? (
+              messages.map((message) => {
+                const isUser = message.type === "USER";
 
-    return (
-      <div
-        key={message.id}
-        className={`flex items-start gap-3 ${
-          isUser ? "justify-end" : "justify-start"
-        }`}
-      >
-        {!isUser && (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-500">
-            <User size={14} />
-          </div>
-        )}
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex items-start gap-3 ${
+                      isUser ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    {!isUser && (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-200 text-blue-600">
+                        <User size={14} />
+                      </div>
+                    )}
 
-        <div
-          className={`flex w-full max-w-[85%] md:max-w-[50%] flex-col ${
-            isUser ? "items-end" : "items-start"
-          }`}
-        >
-          <div
-            className={`w-fit max-w-full overflow-hidden break-words [overflow-wrap:anywhere] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
-              isUser
-                ? "rounded-tr-md bg-violet-500 text-white"
-                : "rounded-tl-md border border-slate-200 bg-white text-slate-700"
-            }`}
-          >
-            {message.content}
-          </div>
+                    <div
+                      className={`flex w-full max-w-[85%] md:max-w-[50%] flex-col ${
+                        isUser ? "items-end" : "items-start"
+                      }`}
+                    >
+                      <div
+                        className={`w-fit max-w-full overflow-hidden break-words [overflow-wrap:anywhere] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
+                          isUser
+                            ? "rounded-tr-md bg-violet-500 text-white"
+                            : "rounded-tl-md border border-slate-200 bg-white text-slate-700"
+                        }`}
+                      >
+                        {message.content}
+                      </div>
 
-          <span className="mt-1 px-1 text-[11px] text-slate-400">
-            {formatTime(message.createdAt)}
-            {isUser ? " • Vous" : " • Support"}
-          </span>
-        </div>
+                      {message.attachments && message.attachments.length > 0 && (
+                        <div className="mt-2 flex flex-col gap-2">
+                          {message.attachments.map((attachment) => {
+                            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(
+                              attachment.fileName
+                            );
+                            return isImage ? (
+                              <img
+                                key={attachment.id}
+                                src={`http://localhost:4002${attachment.fileUrl}`}
+                                alt={attachment.fileName}
+                                className="max-w-xs rounded-lg shadow-md"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <a
+                                key={attachment.id}
+                                href={`http://localhost:4002${attachment.fileUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100"
+                              >
+                                📎 {attachment.fileName}
+                              </a>
+                            );
+                          })}
+                        </div>
+                      )}
 
-        {isUser && (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600">
-            <User size={14} />
-          </div>
-        )}
-      </div>
-    );
-  })
-) : (
-  <p className="text-center text-sm text-slate-500">
-    Aucun message pour le moment.
-  </p>
-)}
+                      <span className="mt-1 px-1 text-[11px] text-slate-400">
+                        {formatTime(message.createdAt)}
+                        {isUser ? " • Vous" : " • Support"}
+                      </span>
+                    </div>
+
+                    {isUser && (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600">
+                        <User size={14} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-center text-sm text-slate-500">
+                Aucun message pour le moment.
+              </p>
+            )}
 
             <div ref={messagesEndRef} />
           </div>

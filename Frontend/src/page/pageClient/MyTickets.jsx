@@ -255,7 +255,7 @@ function MyTickets() {
                         <div className="font-semibold text-slate-900">
                           {ticket.title}
                         </div>
-                        <div className="mt-1 max-w-xs truncate text-xs text-slate-400">
+                        <div className="mt-1 max-w-xs line-clamp-2 text-xs text-slate-400">
                           {ticket.description}
                         </div>
                       </td>
