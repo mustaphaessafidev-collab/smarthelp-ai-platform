@@ -1,6 +1,6 @@
 export const getCategoriesFromAdmin = async (req, res) => {
   try {
-    const response = await fetch("http://localhost:4000/api/admin/categories");
+    const response = await fetch(`${process.env.API_GATEWAY_URL}/api/admin/categories`);
 
     const text = await response.text();
     console.log("ADMIN RESPONSE:", text);

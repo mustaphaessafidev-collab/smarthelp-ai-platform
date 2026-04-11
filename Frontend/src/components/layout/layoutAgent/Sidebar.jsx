@@ -24,7 +24,7 @@ const menu = [
       <div className="flex items-center justify-between">
         {open && (
           <h2 className="text-xl font-bold text-indigo-600">
-            SmartHelp AI
+            SmartHelp
           </h2>
         )}
 
