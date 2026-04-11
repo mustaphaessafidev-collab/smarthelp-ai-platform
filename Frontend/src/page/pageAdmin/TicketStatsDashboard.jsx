@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { TrendingUp, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Ticket,
+  CircleCheckBig,
+  CircleAlert,
+  CalendarDays,
+  BarChart3,
+  AlertCircle,
+} from "lucide-react";
 import axios from "axios";
 
 function TicketStatsDashboard() {
@@ -14,6 +21,7 @@ function TicketStatsDashboard() {
     const fetchStats = async () => {
       try {
         setLoading(true);
+
         const response = await axios.get(
           "http://localhost:4002/api/tickets/admin/stats",
           {
@@ -22,11 +30,15 @@ function TicketStatsDashboard() {
             },
           }
         );
+
         setStats(response.data.stats);
-        setChartData(response.data.chartData);
+        setChartData(response.data.chartData || []);
       } catch (err) {
-        console.error("Error fetching stats:", err);
-        setError(err.response?.data?.message || "Failed to fetch statistics");
+        console.error("Erreur lors du chargement des statistiques :", err);
+        setError(
+          err.response?.data?.message ||
+            "Impossible de récupérer les statistiques"
+        );
       } finally {
         setLoading(false);
       }
@@ -35,14 +47,40 @@ function TicketStatsDashboard() {
     fetchStats();
   }, [token]);
 
+  const todayData = useMemo(() => {
+    if (!chartData.length) return null;
+    return chartData[chartData.length - 1];
+  }, [chartData]);
+
+  const StatCard = ({ title, value, icon: Icon, iconBg, iconColor, subtitle }) => (
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <h3 className="mt-3 text-3xl font-bold text-slate-900">{value}</h3>
+          {subtitle && <p className="mt-2 text-xs text-slate-500">{subtitle}</p>}
+        </div>
+
+        <div className={`rounded-2xl p-3 ${iconBg}`}>
+          <Icon className={iconColor} size={22} />
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 mb-4">
-            <div className="animate-spin h-8 w-8 border-2 border-violet-600 border-t-transparent rounded-full"></div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-10 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-violet-100">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent"></div>
           </div>
-          <p className="text-slate-600">Loading dashboard...</p>
+          <h2 className="text-lg font-semibold text-slate-900">
+            Chargement du tableau de bord
+          </h2>
+          <p className="mt-2 text-sm text-slate-500">
+            Veuillez patienter...
+          </p>
         </div>
       </div>
     );
@@ -50,179 +88,197 @@ function TicketStatsDashboard() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center">
-          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <p className="text-slate-600">{error}</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-red-200 bg-white px-8 py-10 text-center shadow-sm">
+          <AlertCircle className="mx-auto mb-4 text-red-500" size={42} />
+          <h2 className="text-lg font-semibold text-slate-900">
+            Une erreur est survenue
+          </h2>
+          <p className="mt-2 text-sm text-slate-500">{error}</p>
         </div>
       </div>
     );
   }
 
-  const StatCard = ({ title, value, icon: Icon, color, subtext }) => (
-    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-slate-600 mb-2">{title}</p>
-          <h3 className="text-3xl font-bold text-slate-900">{value}</h3>
-          {subtext && <p className="text-xs text-slate-500 mt-2">{subtext}</p>}
-        </div>
-        <div className={`rounded-full p-3 ${color}`}>
-          <Icon size={24} className="text-white" />
-        </div>
-      </div>
-    </div>
-  );
+  const todayCreated = todayData?.created ?? 0;
+  const todayResolved = todayData?.resolved ?? 0;
+  const todayMax = Math.max(todayCreated, todayResolved, 1);
+  const createdPercent = (todayCreated / todayMax) * 100;
+  const resolvedPercent = (todayResolved / todayMax) * 100;
 
   return (
-    <div className="bg-[#f6f7fb] min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Ticket Dashboard</h1>
-          <p className="text-slate-600 mt-2">
-            Real-time analytics and statistics
-          </p>
+    <div className="min-h-screen bg-slate-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-8">
+        <div className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Tableau de bord des tickets
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Suivi global des performances du support
+            </p>
+          </div>
+
+          
         </div>
 
-        {/* Stats Grid */}
         {stats && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
               <StatCard
-                title="Total Tickets"
+                title="Total des tickets"
                 value={stats.totalTickets}
-                icon={TrendingUp}
-                color="bg-blue-500"
+                icon={Ticket}
+                iconBg="bg-blue-100"
+                iconColor="text-blue-600"
               />
+
               <StatCard
-                title="Resolved"
+                title="Tickets résolus"
                 value={stats.resolvedTickets}
-                icon={CheckCircle2}
-                color="bg-green-500"
-                subtext={`${stats.resolutionRate}% resolution rate`}
+                icon={CircleCheckBig}
+                iconBg="bg-green-100"
+                iconColor="text-green-600"
+                subtitle={`Taux de résolution : ${stats.resolutionRate}%`}
               />
+
               <StatCard
-                title="Open Tickets"
+                title="Tickets ouverts"
                 value={stats.openTickets}
-                icon={AlertCircle}
-                color="bg-orange-500"
+                icon={CircleAlert}
+                iconBg="bg-orange-100"
+                iconColor="text-orange-600"
               />
+
               <StatCard
-                title="Resolved Today"
+                title="Résolus aujourd’hui"
                 value={stats.resolvedToday}
-                icon={CheckCircle2}
-                color="bg-violet-500"
+                icon={CalendarDays}
+                iconBg="bg-violet-100"
+                iconColor="text-violet-600"
               />
+
               <StatCard
-                title="Resolved This Month"
+                title="Résolus ce mois-ci"
                 value={stats.resolvedThisMonth}
-                icon={Clock}
-                color="bg-indigo-500"
+                icon={BarChart3}
+                iconBg="bg-indigo-100"
+                iconColor="text-indigo-600"
               />
             </div>
 
-            {/* Chart Section */}
-            {chartData && chartData.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h2 className="text-xl font-bold text-slate-900 mb-6">
-                  Tickets Last 7 Days
-                </h2>
-
-                <div className="space-y-4">
-                  {chartData.map((day) => {
-                    const maxValue = Math.max(
-                      ...chartData.map((d) => Math.max(d.created, d.resolved))
-                    );
-                    const createdPercent = (day.created / maxValue) * 100;
-                    const resolvedPercent = (day.resolved / maxValue) * 100;
-
-                    return (
-                      <div key={day.date}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-slate-700">
-                            {new Date(day.date).toLocaleDateString("en-US", {
-                              weekday: "short",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </span>
-                          <div className="flex gap-4 text-xs">
-                            <span className="text-blue-600">
-                              Created: {day.created}
-                            </span>
-                            <span className="text-green-600">
-                              Resolved: {day.resolved}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 h-6">
-                          <div
-                            className="bg-blue-500 rounded-lg transition-all"
-                            style={{ width: `${createdPercent}%` }}
-                            title={`${day.created} created`}
-                          />
-                          <div
-                            className="bg-green-500 rounded-lg transition-all"
-                            style={{ width: `${resolvedPercent}%` }}
-                            title={`${day.resolved} resolved`}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+              <div className="xl:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Activité d’aujourd’hui
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Vue rapide des tickets créés et résolus aujourd’hui
+                  </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-200 flex gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                    <span className="text-slate-600">Created</span>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl bg-blue-50 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Tickets créés
+                      </span>
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                        Aujourd’hui
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-bold text-blue-600">
+                      {todayCreated}
+                    </p>
+
+                    <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-blue-100">
+                      <div
+                        className="h-3 rounded-full bg-blue-500 transition-all duration-300"
+                        style={{ width: `${createdPercent}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
-                    <span className="text-slate-600">Resolved</span>
+
+                  <div className="rounded-2xl bg-green-50 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Tickets résolus
+                      </span>
+                      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                        Aujourd’hui
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-bold text-green-600">
+                      {todayResolved}
+                    </p>
+
+                    <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-green-100">
+                      <div
+                        className="h-3 rounded-full bg-green-500 transition-all duration-300"
+                        style={{ width: `${resolvedPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-2xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-600">
+                    {todayResolved >= todayCreated
+                      ? "Le rythme de résolution est bon aujourd’hui."
+                      : "Le nombre de tickets créés dépasse les tickets résolus aujourd’hui."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-900">
+                  Résumé rapide
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Les indicateurs essentiels
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl bg-violet-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold text-violet-700">
+                        {stats.totalTickets}
+                      </span>{" "}
+                      ticket(s) au total.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-orange-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold text-orange-700">
+                        {stats.openTickets}
+                      </span>{" "}
+                      ticket(s) encore ouverts.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-green-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold text-green-700">
+                        {stats.resolutionRate}%
+                      </span>{" "}
+                      de taux de résolution.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-indigo-50 px-4 py-3">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold text-indigo-700">
+                        {stats.resolvedThisMonth}
+                      </span>{" "}
+                      résolu(s) ce mois-ci.
+                    </p>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Summary Box */}
-            <div className="mt-8 bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl p-6 border border-violet-200">
-              <h3 className="text-lg font-bold text-slate-900 mb-3">
-                Summary & Insights
-              </h3>
-              <ul className="space-y-2 text-sm text-slate-700">
-                <li>
-                  ✓ You have resolved{" "}
-                  <span className="font-bold text-green-600">
-                    {stats.resolutionRate}%
-                  </span>{" "}
-                  of all tickets
-                </li>
-                <li>
-                  ✓ There are{" "}
-                  <span className="font-bold text-orange-600">
-                    {stats.openTickets}
-                  </span>{" "}
-                  open tickets waiting for attention
-                </li>
-                <li>
-                  ✓ You resolved{" "}
-                  <span className="font-bold text-violet-600">
-                    {stats.resolvedToday}
-                  </span>{" "}
-                  tickets today
-                </li>
-                {stats.resolvedThisMonth > 0 && (
-                  <li>
-                    ✓ Great performance this month with{" "}
-                    <span className="font-bold text-indigo-600">
-                      {stats.resolvedThisMonth}
-                    </span>{" "}
-                    resolved tickets
-                  </li>
-                )}
-              </ul>
             </div>
           </>
         )}

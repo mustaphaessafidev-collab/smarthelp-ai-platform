@@ -3,14 +3,14 @@ import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { LuTicketSlash } from "react-icons/lu";
 import { IoAddOutline } from "react-icons/io5";
-import { FaTachometerAlt } from "react-icons/fa";
 import { Menu } from "lucide-react";
+import { FiHome } from "react-icons/fi";
 
 function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const menu = [
-    { name: "Tableau de bord", path: "/User", icon: <FaTachometerAlt /> },
+    { name: "Tableau de bord", path: "/User", icon: <FiHome /> },
     { name: "Mes Tickets", path: "/User/MyTickets", icon: <LuTicketSlash /> },
     { name: "Créer un ticket", path: "/User/CreateTicket", icon: <IoAddOutline /> },
     { name: "Profil", path: "/User/Profile", icon: <CgProfile /> },
