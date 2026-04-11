@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
-  FiFileText,
-  FiUsers,
-  FiUserCheck,
-  FiCheckCircle,
-  FiAlertCircle,
-  FiClock,
-  FiTrendingUp,
-  FiCalendar,
-  FiRefreshCw,
-} from "react-icons/fi";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import StatCard from "../../components/Admin/StatCard";
-import TicketTable from "../../components/Admin/TicketTable";
-import AlertsSection from "../../components/Admin/AlertsSection";
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
+
   const token = localStorage.getItem("token");
 
   const fetchDashboardData = async () => {
     try {
-      setRefreshing(true);
+      setError(null);
+
       const response = await axios.get(
         "http://localhost:4002/api/tickets/admin/dashboard",
         {
@@ -34,34 +29,79 @@ function Dashboard() {
           },
         }
       );
-      console.log("Dashboard data:", response.data);
+
       setData(response.data);
-      setError(null);
     } catch (err) {
-      console.error("Error fetching dashboard:", err);
+      console.error("Erreur lors du chargement du tableau de bord :", err);
       setError(
-        err.response?.data?.message || "Failed to load dashboard data"
+        err.response?.data?.message ||
+          "Impossible de charger les données du tableau de bord"
       );
     } finally {
-      setRefreshing(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    setLoading(true);
     if (token) {
-      fetchDashboardData().finally(() => setLoading(false));
+      fetchDashboardData();
+    } else {
+      setLoading(false);
+      setError("Utilisateur non authentifié");
     }
   }, [token]);
 
+  const formatStatus = (status) => {
+    switch (status) {
+      case "NEW":
+        return "Nouveau";
+      case "OPEN":
+        return "Ouvert";
+      case "IN_PROGRESS":
+        return "En cours";
+      case "PENDING":
+        return "En attente";
+      case "RESOLVED":
+        return "Résolu";
+      case "CLOSED":
+        return "Fermé";
+      default:
+        return status;
+    }
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "NEW":
+        return "bg-violet-100 text-violet-700";
+      case "OPEN":
+        return "bg-blue-100 text-blue-700";
+      case "IN_PROGRESS":
+        return "bg-amber-100 text-amber-700";
+      case "PENDING":
+        return "bg-orange-100 text-orange-700";
+      case "RESOLVED":
+        return "bg-green-100 text-green-700";
+      case "CLOSED":
+        return "bg-slate-200 text-slate-700";
+      default:
+        return "bg-slate-100 text-slate-600";
+    }
+  };
+
+  const StatCard = ({ title, value, color }) => (
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-sm font-medium text-slate-500">{title}</p>
+      <h3 className={`mt-3 text-3xl font-bold ${color}`}>{value}</h3>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 mb-4">
-            <div className="animate-spin h-8 w-8 border-2 border-violet-600 border-t-transparent rounded-full"></div>
-          </div>
-          <p className="text-slate-600">Loading dashboard...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-10 text-center shadow-sm">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-violet-600 border-t-transparent"></div>
+          <p className="text-sm text-slate-600">Chargement...</p>
         </div>
       </div>
     );
@@ -69,237 +109,150 @@ function Dashboard() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f6f7fb]">
-        <div className="text-center max-w-md">
-          <FiAlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <p className="text-slate-600 mb-4">{error}</p>
-          <button
-            onClick={fetchDashboardData}
-            className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
-          >
-            Retry
-          </button>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="rounded-3xl border border-red-200 bg-white px-8 py-10 text-center shadow-sm">
+          <p className="text-base font-semibold text-slate-900">
+            Une erreur est survenue
+          </p>
+          <p className="mt-2 text-sm text-slate-500">{error}</p>
         </div>
       </div>
     );
   }
 
-  const { stats, charts, tickets } = data || {};
-  const COLORS = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#ec4899"];
+  const stats = data?.stats || {};
+  const charts = data?.charts || {};
+  const tickets = data?.tickets || {};
+
+  const chartData = charts.ticketsPerDay || [];
+  const recentTickets = tickets.recent || [];
 
   return (
-    <div className="bg-[#f6f7fb] min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Admin Dashboard
-            </h1>
-            <p className="text-slate-600 mt-2">
-              Welcome back! Here's your platform overview.
-            </p>
-          </div>
-          <button
-            onClick={fetchDashboardData}
-            disabled={refreshing}
-            className="rounded-lg p-2 hover:bg-slate-200 transition-colors disabled:opacity-50"
-          >
-            <FiRefreshCw
-              size={24}
-              className={`text-slate-600 ${refreshing ? "animate-spin" : ""}`}
-            />
-          </button>
+    <div className="min-h-screen bg-slate-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-8">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Tableau de bord administrateur
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Vue globale de l’activité de la plateforme
+          </p>
         </div>
 
-        {/* Top Stats Grid */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <StatCard
-              title="Total Users"
-              value={stats.totalUsers}
-              icon={FiUsers}
-              color="bg-blue-500"
-              description="Active users"
-            />
-            <StatCard
-              title="Total Agents"
-              value={stats.totalAgents}
-              icon={FiUserCheck}
-              color="bg-purple-500"
-              description="Support agents"
-            />
-            <StatCard
-              title="Total Tickets"
-              value={stats.totalTickets}
-              icon={FiFileText}
-              color="bg-orange-500"
-              description="All tickets"
-            />
-            <StatCard
-              title="Open Tickets"
-              value={stats.openTickets}
-              icon={FiAlertCircle}
-              color="bg-red-500"
-              description="Needs attention"
-            />
-            <StatCard
-              title="Resolved"
-              value={stats.resolvedTickets}
-              icon={FiCheckCircle}
-              color="bg-green-500"
-              trend={stats.resolutionRate}
-              description={`${stats.resolutionRate}% rate`}
-            />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <StatCard
+            title="Utilisateurs"
+            value={stats.totalUsers ?? 0}
+            color="text-blue-600"
+          />
+          <StatCard
+            title="Agents"
+            value={stats.totalAgents ?? 0}
+            color="text-violet-600"
+          />
+          <StatCard
+            title="Tickets ouverts"
+            value={stats.openTickets ?? 0}
+            color="text-orange-600"
+          />
+        </div>
+
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-5">
+            <h2 className="text-xl font-bold text-slate-900">
+              Évolution des tickets
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Nombre de tickets créés par jour
+            </p>
           </div>
-        )}
 
-        {/* Secondary Stats */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <StatCard
-              title="Pending"
-              value={stats.pendingTickets}
-              icon={FiClock}
-              color="bg-yellow-500"
-              description="Awaiting action"
-            />
-            <StatCard
-              title="Closed Today"
-              value={stats.todayClosed}
-              icon={FiTrendingUp}
-              color="bg-indigo-500"
-              description="Today's progress"
-            />
-            <StatCard
-              title="This Month"
-              value={stats.monthlyTickets}
-              icon={FiCalendar}
-              color="bg-cyan-500"
-              description="Monthly tickets"
-            />
-          </div>
-        )}
-
-        {/* Alerts Section - High Priority & Pending */}
-        {tickets && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">🚨 Alerts & Important Tickets</h2>
-            <AlertsSection
-              highPriorityTickets={tickets.highPriority || []}
-              pendingTickets={tickets.pending || []}
-            />
-          </div>
-        )}
-
-        {/* Charts Section */}
-        {charts && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">📊 Analytics & Trends</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Line Chart - Tickets Per Day */}
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">
-                  📈 Tickets This Week
-                </h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={charts.ticketsPerDay}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="date" stroke="#64748b" />
-                    <YAxis stroke="#64748b" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1e293b",
-                        border: "1px solid #475569",
-                        borderRadius: "8px",
-                        color: "#fff",
-                      }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="tickets"
-                      stroke="#8b5cf6"
-                      strokeWidth={3}
-                      dot={{ fill: "#8b5cf6", r: 5 }}
-                      activeDot={{ r: 7 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Pie Chart - Status Distribution */}
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">
-                  📊 Status Distribution
-                </h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={charts.statusDistribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value, percent }) =>
-                        `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
-                      }
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {charts.statusDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Bar Chart - Priority Distribution */}
-              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm lg:col-span-2">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">
-                  ⚡ Priority Distribution
-                </h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={charts.priorityDistribution}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="name" stroke="#64748b" />
-                    <YAxis stroke="#64748b" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1e293b",
-                        border: "1px solid #475569",
-                        borderRadius: "8px",
-                        color: "#fff",
-                      }}
-                    />
-                    <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          {chartData.length > 0 ? (
+            <div className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" stroke="#64748b" />
+                  <YAxis stroke="#64748b" />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: "14px",
+                      border: "1px solid #e2e8f0",
+                      backgroundColor: "#ffffff",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="tickets"
+                    stroke="#7c3aed"
+                    fill="#c4b5fd"
+                    strokeWidth={3}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+              Aucune donnée statistique disponible.
+            </div>
+          )}
+        </div>
 
-        {/* Recent Tickets Table */}
-        {tickets && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">📋 Recent Tickets</h2>
-            <TicketTable tickets={tickets.recent || []} />
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-5">
+            <h2 className="text-xl font-bold text-slate-900">
+              Tickets récents
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Dernières demandes enregistrées
+            </p>
           </div>
-        )}
 
-        {/* Quick Actions */}
-        <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start mb-8">
-          <button className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full font-medium hover:shadow-lg transition-all hover:scale-105">
-            📊 View All Tickets
-          </button>
-          <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-medium hover:shadow-lg transition-all hover:scale-105">
-            👥 Manage Users
-          </button>
-          <button className="px-6 py-3 bg-white border-2 border-violet-600 text-violet-600 rounded-full font-medium hover:bg-violet-50 transition-colors">
-            📈 Generate Report
-          </button>
+          {recentTickets.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-slate-200 text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3">Sujet</th>
+                    <th className="px-4 py-3">Statut</th>
+                    <th className="px-4 py-3">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentTickets.slice(0, 5).map((ticket) => (
+                    <tr key={ticket.id} className="border-b border-slate-100">
+                      <td className="px-4 py-4">
+                        <div className="font-semibold text-slate-900">
+                          {ticket.title}
+                        </div>
+                        <div className="mt-1 max-w-sm line-clamp-1 text-xs text-slate-400">
+                          {ticket.description}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                            ticket.status
+                          )}`}
+                        >
+                          {formatStatus(ticket.status)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-slate-500">
+                        {new Date(
+                          ticket.createdAt || ticket.updatedAt
+                        ).toLocaleDateString("fr-FR")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+              Aucun ticket récent disponible.
+            </div>
+          )}
         </div>
       </div>
     </div>
