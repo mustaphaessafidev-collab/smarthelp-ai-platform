@@ -184,7 +184,7 @@ function CreateTicket() {
       <div className="min-h-screen bg-slate-50 p-6">
         <div className="mx-auto max-w-6xl space-y-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-extrabold text-[#111827]">
+            <h1 className="text-3xl font-bold text-slate-900">
               Créer un nouveau ticket
             </h1>
             <p className="mt-2 text-sm text-[#6b7280]">

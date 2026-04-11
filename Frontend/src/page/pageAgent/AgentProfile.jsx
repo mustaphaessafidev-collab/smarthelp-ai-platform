@@ -113,12 +113,10 @@ function AgentProfile() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-
         <h1 className="text-3xl font-bold">Agent Profile</h1>
 
         {/* PROFILE CARD */}
         <div className="bg-white p-6 rounded-3xl shadow flex items-center gap-6">
-
           {/* IMAGE */}
           <div className="relative">
             <img
@@ -132,8 +130,9 @@ function AgentProfile() {
               className="w-24 h-24 rounded-full object-cover"
             />
 
-            <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer">
-              ✏️
+            <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer hover:bg-violet-700 transition">
+              <Pencil size={16} />
+
               <input
                 type="file"
                 hidden
@@ -157,7 +156,6 @@ function AgentProfile() {
 
         {/* FORMS */}
         <div className="grid grid-cols-2 gap-6">
-
           {/* UPDATE PROFILE */}
           <form
             onSubmit={handleUpdateProfile}
@@ -229,7 +227,6 @@ function AgentProfile() {
               Update password
             </button>
           </form>
-
         </div>
       </div>
     </div>

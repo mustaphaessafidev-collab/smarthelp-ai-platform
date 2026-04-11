@@ -3,13 +3,11 @@ import { analyzeTicketWithAI, generateAgentReply } from "../services/aiService.j
 export const analyzeTicket = async (req, res) => {
   try {
     const { title, description, categories } = req.body;
-
     if (!title || !description) {
       return res.status(400).json({
         message: "Title and description are required",
       });
     }
-
     const result = await analyzeTicketWithAI({
       title,
       description,

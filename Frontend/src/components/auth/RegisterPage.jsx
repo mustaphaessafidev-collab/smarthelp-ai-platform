@@ -108,8 +108,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#f8f9fc] font-sans antialiased">
-      <div className="flex items-center gap-2.5 mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-5 relative bg-[#f6f8fb] font-sans antialiased">
+      <div className="absolute top-8 left-10 flex items-center gap-2.5 font-bold text-slate-800 text-base tracking-tight">
         <div className="w-10 h-10 flex items-center justify-center bg-indigo-50 text-indigo-500 rounded-full">
           <svg
             width="22"
@@ -129,13 +129,15 @@ const RegisterPage = () => {
         </span>
       </div>
 
-      <div className="bg-white rounded-[24px] p-8 sm:p-10 w-full max-w-[480px] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">
-            Créer un compte
+      <div className="bg-white rounded-[30px] p-12 w-full max-w-[470px] shadow-[0_15px_35px_rgba(0,0,0,0.04),0_5px_15px_rgba(0,0,0,0.02)] mb-6 max-sm:px-6 max-sm:py-10">
+        <div className="text-center mb-8">
+          <h1 className="m-0 mb-2 text-[28px] font-bold text-slate-900 tracking-tight">
+                       Créer un compte
+
           </h1>
-          <p className="text-[15px] text-slate-500">
-            Rejoignez des milliers d’utilisateurs qui profitent de l’assistance par IA.
+          <p className="m-0 text-[15px] text-slate-500">
+                        Rejoignez des milliers d’utilisateurs qui profitent de l’assistance par IA.
+
           </p>
         </div>
 
@@ -190,7 +192,7 @@ const RegisterPage = () => {
               <input
                 type="text"
                 name="firstName"
-                placeholder="Jean"
+                placeholder="votre prénom"
                 value={data.firstName}
                 onChange={handleChange}
                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
@@ -219,7 +221,7 @@ const RegisterPage = () => {
               <input
                 type="text"
                 name="lastName"
-                placeholder="Dupont"
+                placeholder="votre nom"
                 value={data.lastName}
                 onChange={handleChange}
                 className="w-full py-3 pl-11 pr-4 text-[15px] border border-slate-200 rounded-xl bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
@@ -352,9 +354,22 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            className="w-full mt-4 py-3.5 bg-indigo-500 text-white rounded-xl text-[15px] font-semibold flex justify-center items-center gap-2 transition-all hover:bg-indigo-600 active:scale-[0.98] shadow-sm shadow-indigo-500/20"
+            className="w-full p-3.5 bg-gradient-to-br from-violet-600 to-indigo-500 text-white border-none rounded-full text-base font-semibold cursor-pointer flex justify-center items-center gap-2 transition-all shadow-[0_4px_12px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_16px_rgba(99,102,241,0.4)] active:scale-[0.98]"
           >
-            S’inscrire
+            S'inscrire
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
           </button>
         </form>
       </div>

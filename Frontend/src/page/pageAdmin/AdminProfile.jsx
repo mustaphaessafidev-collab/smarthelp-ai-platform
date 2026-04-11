@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
+import { Pencil } from "lucide-react";
 const BASE_URL = "http://localhost:4001";
 
 function AdminProfile() {
@@ -113,12 +114,10 @@ function AdminProfile() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-
         <h1 className="text-3xl font-bold">Admin Profile</h1>
 
         {/* CARD */}
         <div className="bg-white p-6 rounded-3xl shadow flex items-center gap-6">
-
           {/* IMAGE */}
           <div className="relative">
             <img
@@ -132,8 +131,8 @@ function AdminProfile() {
               className="w-24 h-24 rounded-full object-cover"
             />
 
-            <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer">
-              ✏️
+            <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer flex items-center justify-center">
+              <Pencil size={18} />
               <input
                 type="file"
                 hidden
@@ -157,7 +156,6 @@ function AdminProfile() {
 
         {/* FORMS */}
         <div className="grid grid-cols-2 gap-6">
-
           {/* PROFILE */}
           <form
             onSubmit={handleUpdateProfile}
@@ -229,7 +227,6 @@ function AdminProfile() {
               Update password
             </button>
           </form>
-
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {Eye} from "lucide-react";
+import { Eye, Ticket, CircleAlert, CircleCheckBig, Clock3 } from "lucide-react";
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -25,10 +25,10 @@ function UserDashboard() {
   const totalTickets = tickets.length;
   const newTickets = tickets.filter((ticket) => ticket.status === "NEW").length;
   const inProgressTickets = tickets.filter(
-    (ticket) => ticket.status === "IN_PROGRESS"
+    (ticket) => ticket.status === "IN_PROGRESS",
   ).length;
   const resolvedTickets = tickets.filter(
-    (ticket) => ticket.status === "RESOLVED"
+    (ticket) => ticket.status === "RESOLVED",
   ).length;
 
   const recentTickets = [...tickets].slice(0, 5);
@@ -93,6 +93,18 @@ function UserDashboard() {
     }
   };
 
+  const StatCard = ({ title, value, icon: Icon, iconBg, iconColor }) => (
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
+      <div>
+        <p className="text-sm text-slate-500">{title}</p>
+        <h2 className="mt-2 text-2xl font-bold text-slate-900">{value}</h2>
+      </div>
+
+      <div className={`p-3 rounded-2xl ${iconBg}`}>
+        <Icon className={iconColor} size={22} />
+      </div>
+    </div>
+  );
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -103,34 +115,38 @@ function UserDashboard() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-slate-500">Total des tickets</p>
-            <h2 className="mt-2 text-3xl font-bold text-violet-600">
-              {totalTickets}
-            </h2>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard
+            title="Total des tickets"
+            value={totalTickets}
+            icon={Ticket}
+            iconBg="bg-violet-100"
+            iconColor="text-violet-600"
+          />
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-slate-500">Nouveaux</p>
-            <h2 className="mt-2 text-3xl font-bold text-violet-500">
-              {newTickets}
-            </h2>
-          </div>
+          <StatCard
+            title="Nouveaux"
+            value={newTickets}
+            icon={CircleAlert}
+            iconBg="bg-blue-100"
+            iconColor="text-blue-600"
+          />
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-slate-500">En cours</p>
-            <h2 className="mt-2 text-3xl font-bold text-orange-500">
-              {inProgressTickets}
-            </h2>
-          </div>
+          <StatCard
+            title="En cours"
+            value={inProgressTickets}
+            icon={Clock3}
+            iconBg="bg-orange-100"
+            iconColor="text-orange-600"
+          />
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-slate-500">Résolus</p>
-            <h2 className="mt-2 text-3xl font-bold text-green-500">
-              {resolvedTickets}
-            </h2>
-          </div>
+          <StatCard
+            title="Résolus"
+            value={resolvedTickets}
+            icon={CircleCheckBig}
+            iconBg="bg-green-100"
+            iconColor="text-green-600"
+          />
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -171,7 +187,9 @@ function UserDashboard() {
                         {ticket.title}
                       </td>
 
-                      <td className={`px-6 py-4 ${getPriorityStyle(ticket.priority)}`}>
+                      <td
+                        className={`px-6 py-4 ${getPriorityStyle(ticket.priority)}`}
+                      >
                         {translatePriority(ticket.priority)}
                       </td>
 
@@ -182,7 +200,7 @@ function UserDashboard() {
                       <td className="px-6 py-4">
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                            ticket.status
+                            ticket.status,
                           )}`}
                         >
                           {translateStatus(ticket.status)}
@@ -195,12 +213,14 @@ function UserDashboard() {
 
                       <td className="px-6 py-4">
                         <button
-                            onClick={() => navigate(`/User/TicketDetails/${ticket.id}`)}
-                            className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
-                            title="Voir"
-                          >
-                            <Eye size={18} />
-                          </button>
+                          onClick={() =>
+                            navigate(`/User/TicketDetails/${ticket.id}`)
+                          }
+                          className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
+                          title="Voir"
+                        >
+                          <Eye size={18} />
+                        </button>
                       </td>
                     </tr>
                   ))

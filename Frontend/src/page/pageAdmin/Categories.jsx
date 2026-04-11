@@ -103,10 +103,11 @@ function Categories() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 rounded-full bg-violet-600 px-5 py-3 text-white shadow-lg hover:bg-violet-700"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
           >
-            <Plus size={18} />
-            Ajouter
+            + Catégorie
+          
+           
           </button>
         </div>
 

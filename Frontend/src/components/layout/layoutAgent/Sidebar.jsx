@@ -2,17 +2,17 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaTachometerAlt, FaUserCog, FaUsers } from "react-icons/fa";
-import { Menu } from "lucide-react";
+import { LayoutDashboard, Menu, Ticket, User } from "lucide-react";
 
 function Sidebar() {
   const [open, setOpen] = useState(true);
 
-  const menu = [
-    { name: "Tableau de bord", path: "/Agent", icon: <FaTachometerAlt /> },
-    { name: "All Tickets", path: "/Agent/AllTickets", icon: <FaUsers /> },
-    { name: "My Tickets", path: "/Agent/Tickets", icon: <FaUsers /> },
-    { name: "Profil", path: "/Agent/Profile", icon: <CgProfile /> },
-  ];
+const menu = [
+  { name: "Tableau de bord", path: "/Agent", icon: <LayoutDashboard size={20} /> },
+  { name: "Tous tickets", path: "/Agent/AllTickets", icon: <Ticket size={20} /> },
+  { name: "Mes tickets", path: "/Agent/Tickets", icon: <Ticket size={20} /> },
+  { name: "Profil", path: "/Agent/Profile", icon: <CgProfile size={20} /> },
+];
 
   return (
     <aside

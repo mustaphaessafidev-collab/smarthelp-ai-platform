@@ -414,7 +414,7 @@ function TicketDetailsAgent() {
           <div className="mx-auto max-w-4xl">
             {(ticket.status === "RESOLVED" || ticket.status === "CLOSED") && (
               <div className="mb-3 rounded-lg bg-green-50 p-3 text-sm text-green-700 border border-green-200">
-                ℹ️ This ticket is closed and cannot receive new messages.
+                ce ticket est fermé. Vous ne pouvez plus envoyer de messages.
               </div>
             )}
             <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-[#f7f8fc] px-3 py-2">
