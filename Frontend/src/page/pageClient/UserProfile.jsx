@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 
+import { Pencil } from "lucide-react";
 function UserProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -9,7 +10,7 @@ function UserProfile() {
     firstName: "",
     lastName: "",
     email: "",
-    profileImage: null, // 👈 بدلناها
+    profileImage: null,
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -124,28 +125,27 @@ function UserProfile() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-6xl space-y-6">
-
         <h1 className="text-3xl font-bold text-slate-900">Mon Profil</h1>
 
         {/* PROFILE CARD */}
         <div className="bg-white p-6 rounded-3xl shadow">
           <div className="flex items-center gap-6">
-
             {/* IMAGE */}
-                      <div className="relative">
-          <img
-            src={
-              formData.profileImage
-                ? URL.createObjectURL(formData.profileImage)
-                : profile?.profileImage
-                  ? `http://localhost:4001${profile.profileImage}`
-                  : "https://via.placeholder.com/150"
-            }
-            className="w-24 h-24 rounded-full object-cover"
-          />
+            <div className="relative">
+              <img
+                src={
+                  formData.profileImage
+                    ? URL.createObjectURL(formData.profileImage)
+                    : profile?.profileImage
+                      ? `http://localhost:4001${profile.profileImage}`
+                      : "https://via.placeholder.com/150"
+                }
+                className="w-24 h-24 rounded-full object-cover"
+              />
 
-              <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer">
-                ✏️
+              <label className="absolute bottom-0 right-0 bg-violet-600 text-white p-2 rounded-full cursor-pointer hover:bg-violet-700 transition">
+                <Pencil size={16} />
+
                 <input
                   type="file"
                   hidden
@@ -166,7 +166,6 @@ function UserProfile() {
 
         {/* FORMS */}
         <div className="grid grid-cols-2 gap-6">
-
           {/* UPDATE PROFILE */}
           <form
             onSubmit={handleUpdateProfile}
@@ -244,7 +243,6 @@ function UserProfile() {
               Update password
             </button>
           </form>
-
         </div>
       </div>
     </div>
