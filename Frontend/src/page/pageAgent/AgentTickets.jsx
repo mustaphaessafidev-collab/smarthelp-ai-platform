@@ -15,7 +15,7 @@ function AgentTickets() {
       const res = await api.get("/tickets/categories");
       setCategories(res.data?.data || res.data || []);
     } catch (err) {
-      console.error("Categories fetch error:", err);
+      console.error("Erreur catégories :", err);
     }
   };
 
@@ -25,8 +25,8 @@ function AgentTickets() {
       const res = await api.get("/tickets/my");
       setTickets(res.data?.tickets || res.data || []);
     } catch (error) {
-      console.error("Fetch my tickets error:", error);
-      setError("Failed to load your tickets");
+      console.error("Erreur tickets :", error);
+      setError("Échec du chargement de vos tickets");
     } finally {
       setLoading(false);
     }
@@ -39,6 +39,7 @@ function AgentTickets() {
     }, {});
   }, [categories]);
 
+  // STATUS (FR)
   const getStatusColor = (status) => {
     switch (status) {
       case "NEW":
@@ -54,6 +55,22 @@ function AgentTickets() {
     }
   };
 
+  const translateStatus = (status) => {
+    switch (status) {
+      case "NEW":
+        return "Nouveau";
+      case "IN_PROGRESS":
+        return "En cours";
+      case "RESOLVED":
+        return "Résolu";
+      case "CLOSED":
+        return "Fermé";
+      default:
+        return status;
+    }
+  };
+
+  // PRIORITY (FR)
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "URGENT":
@@ -69,6 +86,21 @@ function AgentTickets() {
     }
   };
 
+  const translatePriority = (priority) => {
+    switch (priority) {
+      case "URGENT":
+        return "Urgente";
+      case "HIGH":
+        return "Élevée";
+      case "MEDIUM":
+        return "Moyenne";
+      case "LOW":
+        return "Faible";
+      default:
+        return priority;
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchMyTickets();
@@ -77,7 +109,7 @@ function AgentTickets() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
-        <div className="text-slate-500">Loading your tickets...</div>
+        <div className="text-slate-500">Chargement des tickets...</div>
       </div>
     );
   }
@@ -85,38 +117,46 @@ function AgentTickets() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+
+        {/* TITLE */}
         <div>
-          <h1 className="text-4xl font-bold text-slate-900">My Assigned Tickets</h1>
-          <p className="text-slate-500 mt-1">Tickets currently assigned to you</p>
+          <h1 className="text-4xl font-bold text-slate-900">
+            Mes tickets assignés
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Tickets actuellement assignés à vous
+          </p>
         </div>
 
+        {/* ERROR */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             {error}
           </div>
         )}
 
+        {/* TABLE */}
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200">
+
           {/* HEADER */}
-          <div className="grid grid-cols-6 gap-4 p-5 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-            <div>Subject</div>
-            <div>Status</div>
-            <div>Category</div>
-            <div>Priority</div>
+          <div className="grid grid-cols-6 gap-4 p-5 border-b bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+            <div>Sujet</div>
+            <div>Statut</div>
+            <div>Catégorie</div>
+            <div>Priorité</div>
             <div>Date</div>
             <div>Actions</div>
           </div>
 
-          {/* EMPTY STATE */}
+          {/* EMPTY */}
           {tickets.length === 0 && (
             <div className="p-12 text-center">
-              <div className="text-slate-400 mb-2">
-                <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-              </div>
-              <p className="text-slate-500 font-medium">No tickets assigned yet</p>
-              <p className="text-slate-400 text-sm">Go to Available Tickets to take a ticket</p>
+              <p className="text-slate-500 font-medium">
+                Aucun ticket assigné
+              </p>
+              <p className="text-slate-400 text-sm">
+                Allez dans les tickets disponibles pour en prendre un
+              </p>
             </div>
           )}
 
@@ -124,52 +164,54 @@ function AgentTickets() {
           {tickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="grid grid-cols-6 gap-4 p-5 border-b border-slate-100 items-center hover:bg-slate-50 transition-colors"
+              className="grid grid-cols-6 gap-4 p-5 border-b items-center hover:bg-slate-50 transition"
             >
+
               {/* TITLE */}
               <div className="min-w-0">
-                <p className="font-semibold text-slate-900 truncate">{ticket.title}</p>
-                <p className="text-xs text-slate-400 truncate mt-1">{ticket.description}</p>
+                <p className="font-semibold text-slate-900 truncate">
+                  {ticket.title}
+                </p>
+                <p className="text-xs text-slate-400 truncate mt-1">
+                  {ticket.description}
+                </p>
               </div>
 
               {/* STATUS */}
               <div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                  {ticket.status}
+                  {translateStatus(ticket.status)}
                 </span>
               </div>
 
               {/* CATEGORY */}
               <div className="text-sm text-slate-600">
-                {categoriesMap[ticket.categoryId] || "Uncategorized"}
+                {categoriesMap[ticket.categoryId] || "Sans catégorie"}
               </div>
 
               {/* PRIORITY */}
               <div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
-                  {ticket.priority}
+                  {translatePriority(ticket.priority)}
                 </span>
               </div>
 
               {/* DATE */}
               <div className="text-sm text-slate-500">
-                {new Date(ticket.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+                {new Date(ticket.createdAt).toLocaleDateString("fr-FR")}
               </div>
 
-              {/* ACTIONS */}
+              {/* ACTION */}
               <div>
                 <button
                   onClick={() => navigate(`/agent/ticket/${ticket.id}`)}
-                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-violet-100 text-violet-600 hover:bg-violet-200 transition-colors"
-                  title="View ticket"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-violet-100 text-violet-600 hover:bg-violet-200"
+                  title="Voir"
                 >
                   <Eye size={18} />
                 </button>
               </div>
+
             </div>
           ))}
         </div>

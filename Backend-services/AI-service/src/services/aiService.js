@@ -109,11 +109,17 @@ Réponds directement sans explications supplémentaires, uniquement le message.
     temperature: 0.7,
   });
 
-  const reply = completion.choices?.[0]?.message?.content?.trim();
+  let reply = completion.choices?.[0]?.message?.content?.trim();
 
-  if (!reply) {
-    throw new Error("No AI reply generated");
-  }
+if (!reply) {
+  throw new Error("No AI reply generated");
+}
+
+reply = reply
+  .replace(/\[Votre prénom\].*/gi, "")
+  .replace(/Cordialement,?.*/gi, "")
+  .replace(/Support Technique.*/gi, "")
+  .trim();
 
   return { reply };
 };

@@ -179,7 +179,7 @@ function UserProfile() {
               value={formData.firstName}
               onChange={handleProfileChange}
               className="w-full p-3 border rounded-xl"
-              placeholder="First name"
+              placeholder="prénom"
             />
 
             <input
@@ -188,7 +188,7 @@ function UserProfile() {
               value={formData.lastName}
               onChange={handleProfileChange}
               className="w-full p-3 border rounded-xl"
-              placeholder="Last name"
+              placeholder="nom"
             />
 
             <input
@@ -201,7 +201,7 @@ function UserProfile() {
             />
 
             <button className="bg-violet-600 text-white px-4 py-3 rounded-xl">
-              Save changes
+              Enregistrer 
             </button>
           </form>
 
@@ -214,7 +214,7 @@ function UserProfile() {
 
             <input
               type="password"
-              name="currentPassword"
+              name="mot de passe actuel"
               value={passwordData.currentPassword}
               onChange={handlePasswordChange}
               className="w-full p-3 border rounded-xl"
@@ -223,7 +223,7 @@ function UserProfile() {
 
             <input
               type="password"
-              name="newPassword"
+              name="nouveau mot de passe"
               value={passwordData.newPassword}
               onChange={handlePasswordChange}
               className="w-full p-3 border rounded-xl"
@@ -232,7 +232,7 @@ function UserProfile() {
 
             <input
               type="password"
-              name="confirmPassword"
+              name="confirmation mot de passe"
               value={passwordData.confirmPassword}
               onChange={handlePasswordChange}
               className="w-full p-3 border rounded-xl"
@@ -240,7 +240,7 @@ function UserProfile() {
             />
 
             <button className="bg-black text-white px-4 py-3 rounded-xl">
-              Update password
+              Enregistrer
             </button>
           </form>
         </div>

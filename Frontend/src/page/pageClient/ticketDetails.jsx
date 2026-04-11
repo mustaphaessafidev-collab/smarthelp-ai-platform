@@ -58,7 +58,7 @@ function TicketDetails() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ✅ SEND MESSAGE WITH CHECK
+  //  SEND MESSAGE WITH CHECK
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -152,7 +152,7 @@ function TicketDetails() {
         {/* INPUT */}
         <div className={`p-4 border-t ${isClosed ? "bg-gray-100 opacity-60" : ""}`}>
 
-          {/* ✅ MESSAGE IF CLOSED */}
+          {/*  MESSAGE IF CLOSED */}
           {isClosed && (
             <div className="mb-2 text-sm text-green-600">
               Ce ticket est fermé. Vous ne pouvez plus envoyer de messages.

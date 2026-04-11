@@ -83,7 +83,7 @@ function AllTickets() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
-        <div className="text-slate-500">Loading tickets...</div>
+        <div className="text-slate-500">Chargement des tickets...</div>
       </div>
     );
   }
@@ -92,8 +92,8 @@ function AllTickets() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900">Available Tickets</h1>
-          <p className="text-slate-500 mt-1">Browse and take tickets to work on</p>
+          <h1 className="text-4xl font-bold text-slate-900">Tickets disponibles</h1>
+          <p className="text-slate-500 mt-1">Consultez et prenez des tickets à traiter</p>
         </div>
 
         {error && (
@@ -105,12 +105,12 @@ function AllTickets() {
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200">
           {/* HEADER */}
           <div className="grid grid-cols-6 gap-4 p-5 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-            <div>Subject</div>
-            <div>Status</div>
-            <div>Category</div>
-            <div>Priority</div>
-            <div>Created By</div>
-            <div>Action</div>
+            <div>Sujet</div>
+  <div>Statut</div>
+  <div>Catégorie</div>
+  <div>Priorité</div>
+  <div>Créé par</div>
+  <div>Action</div>
           </div>
 
           {/* EMPTY STATE */}
@@ -121,8 +121,8 @@ function AllTickets() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <p className="text-slate-500 font-medium">No tickets available</p>
-              <p className="text-slate-400 text-sm">Check back soon for new tickets</p>
+              <p className="text-slate-500 font-medium">Aucun ticket disponible</p>
+              <p className="text-slate-400 text-sm">Revenez plus tard pour de nouveaux tickets</p>
             </div>
           )}
 
@@ -159,19 +159,19 @@ function AllTickets() {
 
               {/* USER */}
               <div className="text-sm text-slate-600">
-                User #{ticket.createdBy}
+                Utilisateur #{ticket.createdBy}
               </div>
 
               {/* ACTION */}
               <div>
                 {ticket.assignedTo ? (
-                  <span className="text-green-600 text-sm font-semibold">✓ Taken</span>
+                  <span className="text-green-600 text-sm font-semibold">✓ Pris</span>
                 ) : (
                   <button
                     onClick={() => assignTicket(ticket.id)}
                     className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    Take
+                    Prendre
                   </button>
                 )}
               </div>
