@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { Link } from "react-router-dom";
 
 const VerifyCodePage = () => {
   const navigate = useNavigate();
@@ -36,7 +37,9 @@ const VerifyCodePage = () => {
     }
 
     if (timeLeft <= 0) {
-      alert("Le code de vérification a expiré. Veuillez vous inscrire à nouveau.");
+      alert(
+        "Le code de vérification a expiré. Veuillez vous inscrire à nouveau.",
+      );
       return;
     }
 
@@ -88,7 +91,8 @@ const VerifyCodePage = () => {
 
         {timeLeft <= 0 && (
           <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 text-center">
-            Votre code de vérification a expiré. Veuillez vous inscrire à nouveau pour obtenir un nouveau code.
+            Votre code de vérification a expiré. Veuillez vous inscrire à
+            nouveau pour obtenir un nouveau code.
           </div>
         )}
 
@@ -111,11 +115,29 @@ const VerifyCodePage = () => {
           <button
             type="submit"
             disabled={loading || timeLeft <= 0}
-            className="w-full py-3.5 bg-indigo-500 text-white rounded-xl font-semibold hover:bg-indigo-600 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full p-3.5 bg-gradient-to-br from-violet-600 to-indigo-500 text-white border-none rounded-full text-base font-semibold cursor-pointer flex justify-center items-center gap-2 transition-all shadow-[0_4px_12px_rgba(99,102,241,0.3)] hover:shadow-[0_6px_16px_rgba(99,102,241,0.4)] active:scale-[0.98]"
           >
             {loading ? "Vérification..." : "Vérifier"}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
           </button>
         </form>
+        <p className="text-sm text-center mt-6">
+          <Link to="/login" className="text-indigo-500 font-semibold">
+            Retour au login
+          </Link>
+        </p>
       </div>
     </div>
   );

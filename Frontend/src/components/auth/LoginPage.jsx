@@ -58,8 +58,23 @@ const LoginPage = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-5 relative bg-[#f6f8fb] font-sans antialiased">
       {/* Modern subtle logo in the top left */}
       <div className="absolute top-8 left-10 flex items-center gap-2.5 font-bold text-slate-800 text-base tracking-tight">
-        <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-md"></div>
-        <span>SmartHelp AI</span>
+        <div className="w-10 h-10 flex items-center justify-center bg-indigo-50 text-indigo-500 rounded-full">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+          </svg>
+        </div>
+        <span className="text-2xl font-bold text-indigo-600 tracking-tight">
+          SmartHelp AI
+        </span>
       </div>
 
       <div className="bg-white rounded-[30px] p-12 w-full max-w-[470px] shadow-[0_15px_35px_rgba(0,0,0,0.04),0_5px_15px_rgba(0,0,0,0.02)] mb-6 max-sm:px-6 max-sm:py-10">
@@ -97,7 +112,7 @@ const LoginPage = () => {
                 type="email"
                 name="email"
                 className="w-full py-3.5 pl-11 pr-4 text-[15px] border border-slate-200 rounded-full bg-white text-slate-900 outline-none transition-all placeholder:text-slate-400 placeholder:font-normal focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                placeholder="nom@entreprise.com"
+                placeholder="nom@exemple.com"
                 value={data.email}
                 onChange={handleChange}
               />
