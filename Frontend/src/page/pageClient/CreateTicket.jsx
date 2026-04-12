@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function CreateTicket() {
   const navigate = useNavigate();
@@ -29,9 +29,7 @@ function CreateTicket() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:4000/api/tickets/categories",
-        );
+        const res = await api.get("/tickets/categories");
         const categoriesData = Array.isArray(res.data)
           ? res.data
           : res.data?.categories || [];
@@ -88,14 +86,11 @@ function CreateTicket() {
     try {
       setAnalyzing(true);
 
-      const response = await axios.post(
-        "http://localhost:4004/api/ai/analyze-ticket",
-        {
-          title: formData.title,
-          description: formData.description,
-          categories,
-        },
-      );
+      const response = await api.post("/ai/analyze-ticket", {
+        title: formData.title,
+        description: formData.description,
+        categories,
+      });
 
       const aiData = response.data;
 
@@ -135,8 +130,6 @@ function CreateTicket() {
 
     try {
       setSubmitting(true);
-
-      const token = localStorage.getItem("token");
       const data = new FormData();
 
       data.append("title", formData.title);
@@ -151,9 +144,8 @@ function CreateTicket() {
         data.append("attachments", file);
       });
 
-      await axios.post("http://localhost:4000/api/tickets/create", data, {
+      await api.post("/tickets/create", data, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

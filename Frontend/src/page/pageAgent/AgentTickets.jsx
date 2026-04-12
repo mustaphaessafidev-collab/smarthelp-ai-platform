@@ -101,15 +101,15 @@ function AgentTickets() {
     }
   };
 
-  const hasUnreadUpdate = (ticket) => {
-    const lastSeen = localStorage.getItem(`ticket_seen_${ticket.id}`);
+  // const hasUnreadUpdate = (ticket) => {
+  //   const lastSeen = localStorage.getItem(`ticket_seen_${ticket.id}`);
 
-    if (!lastSeen) {
-      return ticket.updatedAt && ticket.updatedAt !== ticket.createdAt;
-    }
+  //   if (!lastSeen) {
+  //     return ticket.updatedAt && ticket.updatedAt !== ticket.createdAt;
+  //   }
 
-    return new Date(ticket.updatedAt) > new Date(lastSeen);
-  };
+  //   return new Date(ticket.updatedAt) > new Date(lastSeen);
+  // };
 
   useEffect(() => {
     fetchCategories();
@@ -215,10 +215,10 @@ function AgentTickets() {
                 <div className="relative">
                   <button
                     onClick={() => {
-                      localStorage.setItem(
-                        `ticket_seen_${ticket.id}`,
-                        ticket.updatedAt,
-                      );
+                      // localStorage.setItem(
+                      //   `ticket_seen_${ticket.id}`,
+                      //   ticket.updatedAt,
+                      // );
                       navigate(`/agent/ticket/${ticket.id}`);
                     }}
                     className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
@@ -227,9 +227,9 @@ function AgentTickets() {
                     <Eye size={18} />
                   </button>
 
-                  {hasUnreadUpdate(ticket) && (
+                  {/* {hasUnreadUpdate(ticket) && (
                     <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
-                  )}
+                  )} */}
                
               </div>
             </div>

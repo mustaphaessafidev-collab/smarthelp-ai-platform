@@ -27,6 +27,7 @@ app.use(
     ignorePath: false,
   })
 );
+
 app.use(
   "/api/admin",
   createProxyMiddleware({
@@ -41,7 +42,7 @@ app.use(
     target: process.env.AUTH_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: {
-      "^/api/admin": "", 
+      "^/api/admin": "",
     },
   })
 );
@@ -51,7 +52,6 @@ app.use(
   createProxyMiddleware({
     target: process.env.AUTH_SERVICE_URL,
     changeOrigin: true,
-
   })
 );
 
@@ -66,7 +66,7 @@ app.use(
 app.use(
   "/api/ai",
   createProxyMiddleware({
-    target: process.env.AI_SERVICE_URL,
+    target: `${process.env.AI_SERVICE_URL || "http://localhost:4004"}/api/ai`,
     changeOrigin: true,
   })
 );
