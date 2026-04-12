@@ -289,7 +289,6 @@ export const createTicket = async (req, res) => {
 //     });
 //   }
 // };
-
 export const DeleteTicket = async (req, res) => {
   try {
     const userId = Number(req.user?.id);
@@ -310,30 +309,33 @@ export const DeleteTicket = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
-    await prisma.message.deleteMany({
-      where: { ticketId },
+    await prisma.$transaction([
+      prisma.message.deleteMany({
+        where: { ticketId },
+      }),
+      prisma.attachment.deleteMany({
+        where: { ticketId },
+      }),
+      prisma.aIResult.deleteMany({
+        where: { ticketId },
+      }),
+      prisma.ticket.delete({
+        where: { id: ticketId },
+      }),
+    ]);
+
+    return res.status(200).json({
+      message: "Ticket deleted successfully",
     });
-
-    await prisma.attachment.deleteMany({
-      where: { ticketId },
-    });
-
-    
-
-    await prisma.ticket.delete({
-      where: { id: ticketId },
-    });
-
-    return res.status(200).json({ message: "Ticket deleted successfully" });
-
   } catch (error) {
-    console.error("Delete ticket error:", error); 
+    console.error("Delete ticket error:", error);
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,
     });
   }
 };
+
 export const updateTicket = async (req, res) => {
   try {
     const userId = Number(req.user?.id);
@@ -568,51 +570,51 @@ export const closeTicket = async (req, res) => {
 
     console.log(`[closeTicket] Attempting to close ticket ${ticketId} by user ${userId}`);
 
-    // ✅ Validate user
+    
     if (!userId || isNaN(userId)) {
       return res.status(401).json({
         message: "Unauthorized - Invalid user ID",
       });
     }
 
-    // ✅ Validate ticket ID
+    
     if (!ticketId || isNaN(ticketId)) {
       return res.status(400).json({
         message: "Invalid ticket ID",
       });
     }
 
-    // ✅ Fetch ticket
+    
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId },
     });
 
-    // ✅ Debug هنا مزيان
+   
     console.log("ticket.assignedTo:", ticket?.assignedTo);
     console.log("userId:", userId);
 
-    // ✅ Check exists
+    
     if (!ticket) {
       return res.status(404).json({
         message: "Ticket not found",
       });
     }
 
-    // ✅ Check agent
+  
     if (ticket.assignedTo !== userId) {
       return res.status(403).json({
         message: "Only assigned agent can close this ticket",
       });
     }
 
-    // ✅ Check already closed
+
     if (ticket.status === "RESOLVED" || ticket.status === "CLOSED") {
       return res.status(400).json({
         message: "Ticket already closed",
       });
     }
 
-    // ✅ Update
+   
     const closedTicket = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
@@ -621,7 +623,7 @@ export const closeTicket = async (req, res) => {
       },
     });
 
-    // ✅ Socket
+    
     const io = req.app.get("io");
     if (io) {
       io.to(`ticket-${ticketId}`).emit("ticketClosed", {

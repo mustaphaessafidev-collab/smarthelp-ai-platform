@@ -1,14 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { LayoutDashboard, Menu } from "lucide-react";
-import {
-  FiHome,
- 
-  FiUsers,
-  FiUserCheck,
-  FiGrid,
-
-} from "react-icons/fi";
+import { FiUsers, FiUserCheck, FiGrid } from "react-icons/fi";
 import { LuTicketSlash } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 
@@ -16,12 +9,36 @@ function Sidebar() {
   const [open, setOpen] = useState(true);
 
   const menu = [
-    { name: "Dashboard", path: "/Admin", icon: <LayoutDashboard /> },
-    { name: "Tickets", path: "/Admin/tickets-stats", icon: <LuTicketSlash /> },
-    { name: "Users", path: "/Admin/users", icon: <FiUsers /> },
-    { name: "Agents", path: "/Admin/agent", icon: <FiUserCheck /> },
-    { name: "Categories", path: "/Admin/Categories", icon: <FiGrid /> },
-    { name: "Profile", path: "/Admin/Profile", icon: <CgProfile /> },
+    {
+      name: "Tableau de bord",
+      path: "/Admin",
+      icon: <LayoutDashboard size={20} />,
+    },
+    {
+      name: "Tickets",
+      path: "/Admin/tickets-stats",
+      icon: <LuTicketSlash size={20} />,
+    },
+    {
+      name: "Utilisateurs",
+      path: "/Admin/users",
+      icon: <FiUsers size={20} />,
+    },
+    {
+      name: "Agents",
+      path: "/Admin/agent",
+      icon: <FiUserCheck size={20} />,
+    },
+    {
+      name: "Catégories",
+      path: "/Admin/Categories",
+      icon: <FiGrid size={20} />,
+    },
+    {
+      name: "Profil",
+      path: "/Admin/Profile",
+      icon: <CgProfile size={20} />,
+    },
   ];
 
   return (
@@ -49,6 +66,7 @@ function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
+            end={item.path === "/Admin"}   
             className={({ isActive }) =>
               `flex items-center ${
                 open ? "gap-3 px-4 justify-start" : "justify-center"
@@ -61,7 +79,6 @@ function Sidebar() {
             }
           >
             <span className="text-lg">{item.icon}</span>
-
             {open && <span>{item.name}</span>}
           </NavLink>
         ))}

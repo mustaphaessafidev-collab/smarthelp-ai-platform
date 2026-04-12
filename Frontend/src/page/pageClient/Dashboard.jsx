@@ -199,7 +199,7 @@ function UserDashboard() {
 
                       <td className="px-6 py-4">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                          className={`rounded-full whitespace-nowrap  px-3 py-1 text-xs font-semibold ${getStatusStyle(
                             ticket.status,
                           )}`}
                         >
