@@ -38,8 +38,8 @@ function MyTickets() {
     fetchData();
   }, []);
 
-  const DeleteTicket= async(id)=>{
-    try{
+  const DeleteTicket = async (id) => {
+    try {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:4000/api/tickets/${id}`, {
         headers: {
@@ -50,8 +50,7 @@ function MyTickets() {
     } catch (error) {
       console.error("Erreur lors de la suppression du ticket :", error);
     }
-  }
-
+  };
 
   const categoriesMap = useMemo(() => {
     return categories.reduce((acc, category) => {
@@ -148,7 +147,7 @@ function MyTickets() {
 
   const paginatedTickets = filteredTickets.slice(
     (currentPage - 1) * ticketsPerPage,
-    currentPage * ticketsPerPage
+    currentPage * ticketsPerPage,
   );
 
   useEffect(() => {
@@ -160,6 +159,16 @@ function MyTickets() {
     setStatusFilter("ALL");
     setPriorityFilter("ALL");
     setCurrentPage(1);
+  };
+
+  const hasUnreadUpdate = (ticket) => {
+    const lastSeen = localStorage.getItem(`ticket_seen_${ticket.id}`);
+
+    if (!lastSeen) {
+      return ticket.updatedAt && ticket.updatedAt !== ticket.createdAt;
+    }
+
+    return new Date(ticket.updatedAt) > new Date(lastSeen);
   };
 
   return (
@@ -255,14 +264,14 @@ function MyTickets() {
                         <div className="font-semibold text-slate-900">
                           {ticket.title}
                         </div>
-                        <div className="mt-1 max-w-xs line-clamp-2 text-xs text-slate-400">
+                        <div className="mt-1 max-w-[220px] text-xs text-slate-400 break-words line-clamp-1">
                           {ticket.description}
                         </div>
                       </td>
 
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5 ">
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}
+                          className={`rounded-full whitespace-nowrap  px-4 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}
                         >
                           {translateStatus(ticket.status)}
                         </span>
@@ -282,22 +291,36 @@ function MyTickets() {
 
                       <td className="px-6 py-5 text-slate-500">
                         {new Date(
-                          ticket.updatedAt || ticket.createdAt
+                          ticket.updatedAt || ticket.createdAt,
                         ).toLocaleDateString("fr-FR")}
                       </td>
 
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => navigate(`/User/TicketDetails/${ticket.id}`)}
-                            className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
-                            title="Voir"
-                          >
-                            <Eye size={18} />
-                          </button>
+                          <div className="relative">
+                            <button
+                              onClick={() => {
+                              
+                                localStorage.setItem(
+                                  `ticket_seen_${ticket.id}`,
+                                  ticket.updatedAt,
+                                );
+                                navigate(`/User/TicketDetails/${ticket.id}`);
+                              }}
+                              className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
+                              title="Voir"
+                            >
+                              <Eye size={18} />
+                            </button>
 
+                            {hasUnreadUpdate(ticket) && (
+                              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+                            )}
+                          </div>
                           <button
-                          onClick={() => navigate(`/User/UpdateTicket/${ticket.id}`)}
+                            onClick={() =>
+                              navigate(`/User/UpdateTicket/${ticket.id}`)
+                            }
                             className="rounded-full p-2 text-blue-600 hover:bg-blue-50"
                             title="Modifier"
                           >
@@ -317,7 +340,10 @@ function MyTickets() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="py-10 text-center text-slate-500">
+                    <td
+                      colSpan="6"
+                      className="py-10 text-center text-slate-500"
+                    >
                       Aucun ticket trouvé
                     </td>
                   </tr>
@@ -358,7 +384,7 @@ function MyTickets() {
                   >
                     {page}
                   </button>
-                )
+                ),
               )}
 
               <button

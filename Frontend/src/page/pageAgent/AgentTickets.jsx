@@ -101,6 +101,16 @@ function AgentTickets() {
     }
   };
 
+  const hasUnreadUpdate = (ticket) => {
+    const lastSeen = localStorage.getItem(`ticket_seen_${ticket.id}`);
+
+    if (!lastSeen) {
+      return ticket.updatedAt && ticket.updatedAt !== ticket.createdAt;
+    }
+
+    return new Date(ticket.updatedAt) > new Date(lastSeen);
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchMyTickets();
@@ -117,7 +127,6 @@ function AgentTickets() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-
         {/* TITLE */}
         <div>
           <h1 className="text-4xl font-bold text-slate-900">
@@ -137,7 +146,6 @@ function AgentTickets() {
 
         {/* TABLE */}
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200">
-
           {/* HEADER */}
           <div className="grid grid-cols-6 gap-4 p-5 border-b bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wide">
             <div>Sujet</div>
@@ -151,9 +159,7 @@ function AgentTickets() {
           {/* EMPTY */}
           {tickets.length === 0 && (
             <div className="p-12 text-center">
-              <p className="text-slate-500 font-medium">
-                Aucun ticket assigné
-              </p>
+              <p className="text-slate-500 font-medium">Aucun ticket assigné</p>
               <p className="text-slate-400 text-sm">
                 Allez dans les tickets disponibles pour en prendre un
               </p>
@@ -166,7 +172,6 @@ function AgentTickets() {
               key={ticket.id}
               className="grid grid-cols-6 gap-4 p-5 border-b items-center hover:bg-slate-50 transition"
             >
-
               {/* TITLE */}
               <div className="min-w-0">
                 <p className="font-semibold text-slate-900 truncate">
@@ -179,7 +184,9 @@ function AgentTickets() {
 
               {/* STATUS */}
               <div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}
+                >
                   {translateStatus(ticket.status)}
                 </span>
               </div>
@@ -191,7 +198,9 @@ function AgentTickets() {
 
               {/* PRIORITY */}
               <div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}
+                >
                   {translatePriority(ticket.priority)}
                 </span>
               </div>
@@ -202,16 +211,27 @@ function AgentTickets() {
               </div>
 
               {/* ACTION */}
-              <div>
-                <button
-                  onClick={() => navigate(`/agent/ticket/${ticket.id}`)}
-                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-violet-100 text-violet-600 hover:bg-violet-200"
-                  title="Voir"
-                >
-                  <Eye size={18} />
-                </button>
-              </div>
+              
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      localStorage.setItem(
+                        `ticket_seen_${ticket.id}`,
+                        ticket.updatedAt,
+                      );
+                      navigate(`/agent/ticket/${ticket.id}`);
+                    }}
+                    className="rounded-full p-2 text-violet-600 hover:bg-violet-50"
+                    title="Voir"
+                  >
+                    <Eye size={18} />
+                  </button>
 
+                  {hasUnreadUpdate(ticket) && (
+                    <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+                  )}
+               
+              </div>
             </div>
           ))}
         </div>

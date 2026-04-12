@@ -1,18 +1,33 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
+import { LayoutDashboard, Menu, Ticket } from "lucide-react";
 import { CgProfile } from "react-icons/cg";
-import { FaTachometerAlt, FaUserCog, FaUsers } from "react-icons/fa";
-import { LayoutDashboard, Menu, Ticket, User } from "lucide-react";
 
 function Sidebar() {
   const [open, setOpen] = useState(true);
 
-const menu = [
-  { name: "Tableau de bord", path: "/Agent", icon: <LayoutDashboard size={20} /> },
-  { name: "Tous tickets", path: "/Agent/AllTickets", icon: <Ticket size={20} /> },
-  { name: "Mes tickets", path: "/Agent/Tickets", icon: <Ticket size={20} /> },
-  { name: "Profil", path: "/Agent/Profile", icon: <CgProfile size={20} /> },
-];
+  const menu = [
+    {
+      name: "Tableau de bord",
+      path: "/Agent",
+      icon: <LayoutDashboard size={20} />,
+    },
+    {
+      name: "Tous tickets",
+      path: "/Agent/AllTickets",
+      icon: <Ticket size={20} />,
+    },
+    {
+      name: "Mes tickets",
+      path: "/Agent/Tickets",
+      icon: <Ticket size={20} />,
+    },
+    {
+      name: "Profil",
+      path: "/Agent/Profile",
+      icon: <CgProfile size={20} />,
+    },
+  ];
 
   return (
     <aside
@@ -28,7 +43,6 @@ const menu = [
           </h2>
         )}
 
-        {/* BUTTON */}
         <button onClick={() => setOpen(!open)}>
           <Menu />
         </button>
@@ -40,7 +54,8 @@ const menu = [
           <NavLink
             key={item.path}
             to={item.path}
-            title={!open ? item.name : ""} // tooltip ملي يكون مسدود
+            end={item.path === "/Agent"}   // IMPORTANT FIX
+            title={!open ? item.name : ""}
             className={({ isActive }) =>
               `flex items-center ${
                 open ? "gap-3 px-4 justify-start" : "justify-center"
@@ -53,8 +68,6 @@ const menu = [
             }
           >
             <span className="text-lg">{item.icon}</span>
-
-            {/* TEXT */}
             {open && <span>{item.name}</span>}
           </NavLink>
         ))}

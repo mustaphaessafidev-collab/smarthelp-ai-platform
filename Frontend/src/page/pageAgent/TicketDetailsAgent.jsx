@@ -219,7 +219,7 @@ function TicketDetailsAgent() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f6f7fb]">
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">chargement ... </p>
       </div>
     );
   }
@@ -227,7 +227,7 @@ function TicketDetailsAgent() {
   if (!ticket) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f6f7fb]">
-        <p className="text-sm text-slate-500">Ticket not found.</p>
+        <p className="text-sm text-slate-500">Ticket Non Trouvé</p>
       </div>
     );
   }

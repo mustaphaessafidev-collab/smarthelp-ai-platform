@@ -120,7 +120,7 @@ const Navbar = () => (
       <div className="flex items-center gap-4">
         <Link
           to="/login"
-          className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors px-4 py-2 border border-slate-200 rounded-full hover:bg-slate-50"
+          className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors px-5 py-2.5 border border-slate-200 rounded-full hover:bg-slate-50"
         >
           Connexion
         </Link>
@@ -140,14 +140,14 @@ const HeroSection = () => (
     <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-400/20 blur-[100px] rounded-full pointer-events-none mix-blend-multiply" />
 
     <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-start text-left sm:items-start">
-      <div className="inline-flex items-center p-1 pr-3 mb-8 bg-indigo-50/80 backdrop-blur-sm border border-indigo-100 rounded-full">
+      {/* <div className="inline-flex items-center p-1 pr-3 mb-8 bg-indigo-50/80 backdrop-blur-sm border border-indigo-100 rounded-full">
         <span className="bg-white text-indigo-600 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm mr-3">
           Nouveau
         </span>
         <span className="text-[13px] font-medium text-slate-600">
           La version bêta v2.0 est maintenant disponible
         </span>
-      </div>
+      </div> */}
 
       <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05] mb-6 max-w-3xl">
         Révolutionnez <br className="hidden sm:block" />
