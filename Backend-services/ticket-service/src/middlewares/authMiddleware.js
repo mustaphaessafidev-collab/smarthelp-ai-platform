@@ -18,7 +18,6 @@ export const authMiddleware = (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Map userId from token to id in req.user
     req.user = {
       id: decoded.userId,
       userId: decoded.userId,
