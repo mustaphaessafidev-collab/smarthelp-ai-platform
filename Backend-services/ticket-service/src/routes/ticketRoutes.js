@@ -61,7 +61,7 @@ router.post("/create", authMiddleware, upload.array("attachments"), createTicket
 router.get("/my", authMiddleware, getMyAssignedTickets);
 router.post("/:ticketId/assign", authMiddleware, assignTicket);
 
-// User routes (my-tickets and by ID)
+// User routes 
 router.get("/my-tickets", authMiddleware, getMyTickets);
 router.get("/:id", authMiddleware, getTicketById);
 router.post("/:id/messages", authMiddleware, addMessageToTicket);

@@ -1,0 +1,63 @@
+name: SmartHelp CI
+
+on:
+  push:
+    branches:
+      - main
+      - safae
+      - mustapha
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Frontend dependencies
+        working-directory: ./Frontend
+        run: npm install
+
+      - name: Build Frontend
+        working-directory: ./Frontend
+        run: npm run build
+
+      - name: Audit Frontend dependencies
+        working-directory: ./Frontend
+        run: npm audit --audit-level=high
+
+  backend-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - admin-service
+          - AI-service
+          - api-gateway
+          - auth-service
+          - ticket-service
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: ./Backend-services/${{ matrix.service }}
+        run: npm install
+
+      - name: Audit dependencies
+        working-directory: ./Backend-services/${{ matrix.service }}
+        run: npm audit --audit-level=high
+
