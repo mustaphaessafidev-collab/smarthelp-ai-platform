@@ -26,10 +26,7 @@ const LoginPage = () => {
     e.preventDefault();
     // Validate inputs
     try {
-      if (!data.email.trim() || !data.password) {
-        alert("Veuillez saisir votre e-mail et votre mot de passe.");
-        return;
-      }
+      
 
       // send data to backend
       const { remember, ...usedate } = data;

@@ -42,7 +42,7 @@ app.use(
     target: process.env.AUTH_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: {
-      "^/api/admin": "",
+      "^/api/users": "",
     },
   })
 );

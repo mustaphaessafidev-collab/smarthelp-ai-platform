@@ -1,0 +1,10 @@
+{
+  "name": "smarthelp-platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix Backend-services/admin-service\" \"npm run dev --prefix Backend-services/AI-service\" \"npm run dev --prefix Backend-services/api-gateway\" \"npm run dev --prefix Backend-services/auth-service\" \"npm run dev --prefix Backend-services/ticket-service\" \"npm run dev --prefix Frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
