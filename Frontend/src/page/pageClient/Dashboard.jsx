@@ -2,25 +2,44 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, Ticket, CircleAlert, CircleCheckBig, Clock3 } from "lucide-react";
+import { useMemo } from "react";
 
 function UserDashboard() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
   const [tickets, setTickets] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/tickets/my-tickets", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setTickets(response.data.tickets || []);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la récupération des tickets :", error);
-      });
+   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const [ticketsRes, categoriesRes] = await Promise.all([
+          axios.get("http://localhost:4000/api/tickets/my-tickets", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          axios.get("http://localhost:4000/api/tickets/categories"),
+        ]);
+
+        setTickets(ticketsRes.data.tickets || []);
+        setCategories(categoriesRes.data || []);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données :", error);
+      }
+    };
+
+    fetchData();
   }, []);
+
+
+    const categoriesMap = useMemo(() => {
+      return categories.reduce((acc, category) => {
+        acc[category.id] = category.name;
+        return acc;
+      }, {});
+    }, [categories]);
 
   const totalTickets = tickets.length;
   const newTickets = tickets.filter((ticket) => ticket.status === "NEW").length;
@@ -194,7 +213,7 @@ function UserDashboard() {
                       </td>
 
                       <td className="px-6 py-4 text-slate-600">
-                        {ticket.category?.name || "Aucune catégorie"}
+                        {categoriesMap[ticket.categoryId] || "Aucune catégorie"}
                       </td>
 
                       <td className="px-6 py-4">

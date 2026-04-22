@@ -168,12 +168,7 @@ const HeroSection = () => (
         >
           Commencer gratuitement
         </a>
-        <a
-          href="#demo"
-          className="px-8 py-3.5 bg-white text-slate-700 rounded-full font-semibold border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95"
-        >
-          Voir la démo
-        </a>
+        
       </div>
     </div>
   </section>

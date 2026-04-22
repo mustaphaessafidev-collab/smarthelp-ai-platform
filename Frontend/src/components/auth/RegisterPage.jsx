@@ -91,7 +91,7 @@ const RegisterPage = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      alert(message || "Connexion Google réussie");
+      
 
       
       navigate("/User");
